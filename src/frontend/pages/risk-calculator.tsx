@@ -7,7 +7,7 @@ import { AccountService } from "@/services/account.service";
 import { RiskCalculator } from "@/components/calculator/risk-calculator";
 
 export const metadata: Metadata = {
-  title: "Risk Calculator | Trading OS",
+  title: "Risk Calculator | Trader Brio",
 };
 
 export default async function RiskCalculatorPage() {

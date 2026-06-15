@@ -69,7 +69,7 @@ export function Header() {
     }
     // Handle dynamic routes
     if (pathname.startsWith("/journal/")) return "Trade Detail";
-    return "Trading OS";
+    return "Trader Brio";
   };
 
   const initials = session?.user?.name
@@ -77,7 +77,7 @@ export function Header() {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2) ?? "TO";
+    .slice(0, 2) ?? "TB";
 
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40 flex items-center justify-between px-4 md:px-6">
@@ -95,7 +95,7 @@ export function Header() {
               <SheetTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-primary" />
                 <span>
-                  Trading <span className="gradient-text">OS</span>
+                  Trader <span className="gradient-text">Brio</span>
                 </span>
               </SheetTitle>
             </SheetHeader>

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { CoachingDashboard } from "@/components/coaching/coaching-dashboard";
 
 export const metadata: Metadata = {
-  title: "Behavioral Coaching | Trading OS",
+  title: "Behavioral Coaching | Trader Brio",
   description: "Track your trading discipline, compliance, and consistency scores over time.",
 };
 

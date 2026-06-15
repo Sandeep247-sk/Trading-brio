@@ -27,7 +27,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Trading OS",
+  title: "Dashboard | Trader Brio",
 };
 
 export default async function DashboardPage() {

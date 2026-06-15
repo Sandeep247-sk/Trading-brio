@@ -90,7 +90,7 @@ export default function RegisterPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">
-            Trading <span className="gradient-text">OS</span>
+            Trader <span className="gradient-text">Brio</span>
           </h1>
           <p className="text-xs text-muted-foreground">Trading Operating System</p>
         </div>

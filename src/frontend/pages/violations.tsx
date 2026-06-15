@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { ViolationsList } from "@/components/violations/violations-list";
 
 export const metadata: Metadata = {
-  title: "Rule Violations | Trading OS",
+  title: "Rule Violations | Trader Brio",
 };
 
 export default async function ViolationsPage() {

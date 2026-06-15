@@ -11,7 +11,7 @@ import { RuleCategory } from "@prisma/client";
 import { serializeDecimal } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Strategy Builder | Trading OS",
+  title: "Strategy Builder | Trader Brio",
 };
 
 interface SearchParams {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TradeForm } from "@/components/journal/trade-form";
 
 export const metadata: Metadata = {
-  title: "New Trade | Trading OS",
+  title: "New Trade | Trader Brio",
 };
 
 export default function NewTradePage() {
