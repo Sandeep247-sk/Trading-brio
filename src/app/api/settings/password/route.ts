@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const changePasswordSchema = z.object({
@@ -40,12 +40,12 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const isValid = await argon2.verify(user.password, currentPassword);
+    const isValid = await bcrypt.compare(currentPassword, user.password);
     if (!isValid) {
       return NextResponse.json({ error: "Current password is incorrect" }, { status: 403 });
     }
 
-    const hashedPassword = await argon2.hash(newPassword);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await prisma.user.update({
       where: { id: session.user.id },

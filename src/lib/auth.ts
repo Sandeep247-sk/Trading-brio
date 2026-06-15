@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { Role } from "@prisma/client";
 import authConfig from "./auth.config";
@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user || !user.password) return null;
 
-        const isValid = await argon2.verify(user.password, password);
+        const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) return null;
 
         // Log successful login

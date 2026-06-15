@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { registerSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
@@ -30,13 +30,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash password with Argon2id
-    const hashedPassword = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 65536,
-      timeCost: 3,
-      parallelism: 4,
-    });
+    // Hash password with bcryptjs
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user with default account inside a transaction
     const user = await prisma.$transaction(async (tx) => {
