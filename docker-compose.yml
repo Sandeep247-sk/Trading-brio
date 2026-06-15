@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  # PostgreSQL for local development
+  postgres:
+    image: postgres:16-alpine
+    container_name: trading-os-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: trading_os
+      POSTGRES_PASSWORD: trading_os_dev_2024
+      POSTGRES_DB: trading_os
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trading_os"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

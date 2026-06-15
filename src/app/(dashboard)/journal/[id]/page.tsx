@@ -1,0 +1,205 @@
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { TradeService } from "@/services/trade.service";
+import { TradeActions } from "@/components/journal/trade-actions";
+import { ScreenshotGallery } from "@/components/journal/screenshot-gallery";
+import { Direction, TradeResult, ImageType, RuleCategory } from "@prisma/client";
+import { ArrowUpRight, ArrowDownRight, Minus, Calendar, ShieldAlert, Sparkles, BookOpen } from "lucide-react";
+import { TradeAiAudit } from "@/components/journal/trade-ai-audit";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  return {
+    title: `Trade details ${id.substring(0, 8)} | Trading OS`,
+  };
+}
+
+export default async function TradeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const { id } = await params;
+  
+  let trade;
+  try {
+    trade = await TradeService.getTradeById(session.user.id, id);
+  } catch (error) {
+    redirect("/journal");
+  }
+
+  const tradePnl = trade.pnl ? Number(trade.pnl) : 0;
+  const isWin = trade.result === TradeResult.WIN;
+  const isLoss = trade.result === TradeResult.LOSS;
+  const isBreakeven = trade.result === TradeResult.BREAKEVEN;
+
+  // Group screenshots by type
+  const screenshots = trade.images || [];
+  
+  // Get active strategy rules
+  const rules = trade.strategyVersion?.rules || [];
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header and actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              {trade.pair} Execution Detail
+            </h1>
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${
+                trade.direction === Direction.LONG
+                  ? "bg-blue-600/10 border-blue-500/30 text-blue-400"
+                  : "bg-red-600/10 border-red-500/30 text-red-400"
+              }`}
+            >
+              {trade.direction}
+            </span>
+            {trade.result ? (
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${
+                  isWin
+                    ? "bg-green-600/10 border-green-500/30 text-green-400"
+                    : isLoss
+                    ? "bg-red-600/10 border-red-500/30 text-red-400"
+                    : "bg-amber-600/10 border-amber-500/30 text-amber-400"
+                }`}
+              >
+                {trade.result}
+              </span>
+            ) : (
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 border border-gray-850 px-2 py-0.5 rounded">
+                Open
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-1.5 text-xs text-gray-400 mt-1 font-mono">
+            <Calendar className="h-3.5 w-3.5 text-gray-500" />
+            <span>
+              {new Date(trade.date).toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+            <span>•</span>
+            <span className="uppercase">{trade.session.replace(/_/g, " ")} Session</span>
+          </div>
+        </div>
+        <TradeActions tradeId={trade.id} />
+      </div>
+
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Entry Price</p>
+          <p className="text-base font-bold text-white mt-1 font-mono">{Number(trade.entryPrice)}</p>
+        </div>
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Stop Loss</p>
+          <p className="text-base font-bold text-gray-300 mt-1 font-mono">{Number(trade.stopLoss)}</p>
+        </div>
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Take Profit</p>
+          <p className="text-base font-bold text-gray-300 mt-1 font-mono">{Number(trade.takeProfit)}</p>
+        </div>
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Risk Percent</p>
+          <p className="text-base font-bold text-gray-300 mt-1 font-mono">{Number(trade.riskPercent)}%</p>
+        </div>
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">RR Achieved</p>
+          <p className="text-base font-bold text-blue-500 mt-1 font-mono">
+            {trade.rrAchieved !== null ? `${Number(trade.rrAchieved)} R` : "-- R"}
+          </p>
+        </div>
+        <div className="bg-gray-900/40 p-4 border border-gray-800 rounded-lg col-span-2 md:col-span-1">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">P&L</p>
+          <p className={`text-base font-bold mt-1 font-mono ${tradePnl >= 0 ? "text-green-500" : "text-red-500"}`}>
+            {trade.result ? `${tradePnl >= 0 ? "+" : ""}$${tradePnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : "--"}
+          </p>
+        </div>
+      </div>
+
+      {/* Columns: Left content, Right rules & AI */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          {/* Notes Card */}
+          <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg space-y-3">
+            <h3 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-gray-500" />
+              Journal Notes & Context
+            </h3>
+            <div className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
+              {trade.notes || "No notes written for this trade entry."}
+            </div>
+          </div>
+
+          {/* Screenshots Gallery */}
+          <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg space-y-4">
+            <h3 className="text-sm font-semibold text-gray-200">Execution Screenshots</h3>
+            <ScreenshotGallery screenshots={screenshots.map((s) => ({
+              id: s.id,
+              url: s.url,
+              type: s.type,
+              sizeBytes: s.sizeBytes,
+            }))} />
+          </div>
+        </div>
+
+        {/* Right column - Checklist & AI Actions */}
+        <div className="space-y-6">
+          <TradeAiAudit
+            tradeId={trade.id}
+            rules={rules.map((r: any) => ({
+              id: r.id,
+              category: r.category,
+              name: r.name,
+              description: r.description,
+              isRequired: r.isRequired,
+              order: r.order,
+            }))}
+            strategyName={trade.strategyVersion?.strategy.name || "--"}
+            strategyVersion={trade.strategyVersion?.version || "--"}
+            initialAnalysis={
+              trade.analyses && trade.analyses.length > 0
+                ? (() => {
+                    const sorted = [...trade.analyses].sort(
+                      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                    );
+                    const latest = sorted[0];
+                    return {
+                      id: latest.id,
+                      matchScore: latest.matchScore,
+                      executionScore: latest.executionScore,
+                      disciplineScore: latest.disciplineScore,
+                      grade: latest.grade,
+                      checklist: latest.checklist,
+                      mistakes: latest.mistakes,
+                      suggestions: latest.suggestions,
+                      detectedViolations: latest.detectedViolations,
+                      modelUsed: latest.modelUsed,
+                      createdAt: latest.createdAt,
+                    };
+                  })()
+                : null
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
