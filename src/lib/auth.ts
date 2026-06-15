@@ -23,8 +23,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("[AUTH DEBUG] authorize called with credentials:", {
+          email: credentials?.email,
+          hasPassword: !!credentials?.password
+        });
+
         const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) return null;
+        if (!parsed.success) {
+          console.log("[AUTH DEBUG] z.safeParse failed:", parsed.error.format());
+          return null;
+        }
 
         const { email, password } = parsed.data;
 
@@ -32,10 +40,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email, isActive: true, deletedAt: null },
         });
 
-        if (!user || !user.password) return null;
+        console.log("[AUTH DEBUG] user query result:", user ? {
+          id: user.id,
+          email: user.email,
+          isActive: user.isActive,
+          deletedAt: user.deletedAt,
+          hasHash: !!user.password
+        } : "null");
+
+        if (!user || !user.password) {
+          console.log("[AUTH DEBUG] User not found or has no password");
+          return null;
+        }
 
         const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) return null;
+        console.log("[AUTH DEBUG] bcrypt.compare result:", isValid);
+
+        if (!isValid) {
+          console.log("[AUTH DEBUG] Password validation failed");
+          return null;
+        }
 
         // Log successful login
         await prisma.auditLog.create({
