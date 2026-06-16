@@ -18,8 +18,9 @@ export class LocalStorageProvider implements StorageProvider {
   private uploadRoot: string;
 
   constructor() {
-    const root = process.env.UPLOAD_ROOT || "./uploads";
-    this.uploadRoot = path.resolve(process.cwd(), root);
+    const isVercel = process.env.VERCEL === "1";
+    const root = isVercel ? "/tmp" : (process.env.UPLOAD_ROOT || "./uploads");
+    this.uploadRoot = path.isAbsolute(root) ? root : path.resolve(process.cwd(), root);
   }
 
   private getFullPath(key: string): string {

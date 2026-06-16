@@ -26,9 +26,10 @@ export class UploadService {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    let optimizedBuffer: Buffer;
+    let optimizedBuffer: any = buffer;
     let width: number | undefined;
     let height: number | undefined;
+    let isWebp = true;
 
     try {
       // 3. Extract dimensions and validate that it's a valid image using sharp
@@ -48,20 +49,21 @@ export class UploadService {
         .toBuffer();
     } catch (error: any) {
       console.error("Image optimization failed, falling back to original buffer:", error);
-      // Fallback: if sharp fails, verify file structure or raise error
-      throw new Error(`Failed to process image: ${error.message || "Invalid image file"}`);
+      isWebp = false;
     }
 
     // 5. Generate unique UUID filename
     const uuid = crypto.randomUUID();
     const typeFolder = type.toLowerCase().replace(/_/g, "-");
-    const key = `trade-screenshots/${typeFolder}/${uuid}.webp`;
+    const ext = isWebp ? "webp" : (file.type === "image/png" ? "png" : file.type === "image/jpeg" || file.type === "image/jpg" ? "jpg" : "webp");
+    const mimeType = isWebp ? "image/webp" : file.type;
+    const key = `trade-screenshots/${typeFolder}/${uuid}.${ext}`;
 
     // 6. Upload file via StorageProvider
     const uploadResult = await storageProvider.uploadFile(
       optimizedBuffer,
       key,
-      "image/webp"
+      mimeType
     );
 
     const publicUrl = await storageProvider.getPublicUrl(key);
@@ -73,7 +75,7 @@ export class UploadService {
         type,
         url: publicUrl,
         key: uploadResult.key,
-        mimeType: "image/webp",
+        mimeType,
         sizeBytes: uploadResult.sizeBytes,
       },
     });
