@@ -2,6 +2,7 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 import { Readable } from "stream";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 
 export interface StorageProvider {
   uploadFile(
@@ -84,5 +85,84 @@ export class LocalStorageProvider implements StorageProvider {
   }
 }
 
-// Export active storage provider (defaulting to local)
-export const storageProvider = new LocalStorageProvider();
+export class R2StorageProvider implements StorageProvider {
+  private s3Client: S3Client;
+  private bucketName: string;
+  private publicUrl: string;
+
+  constructor() {
+    const accountId = process.env.R2_ACCOUNT_ID || "";
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID || "";
+    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || "";
+    this.bucketName = process.env.R2_BUCKET_NAME || "trading-os-uploads";
+    this.publicUrl = process.env.R2_PUBLIC_URL || "";
+
+    // Cloudflare R2 S3 API Endpoint: https://<account_id>.r2.cloudflarestorage.com
+    this.s3Client = new S3Client({
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      region: "auto",
+    });
+  }
+
+  async uploadFile(
+    file: Buffer,
+    key: string,
+    mimeType: string
+  ): Promise<{ key: string; sizeBytes: number }> {
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      Body: file,
+      ContentType: mimeType,
+    });
+
+    await this.s3Client.send(command);
+
+    return {
+      key,
+      sizeBytes: file.length,
+    };
+  }
+
+  async deleteFile(key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+    });
+    await this.s3Client.send(command);
+  }
+
+  async getFileStream(key: string): Promise<Readable> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+    });
+    const response = await this.s3Client.send(command);
+    if (!response.Body) {
+      throw new Error(`File not found in R2: ${key}`);
+    }
+    return response.Body as Readable;
+  }
+
+  async getPublicUrl(key: string): Promise<string> {
+    const normalizedKey = key.replace(/\\/g, "/");
+    if (this.publicUrl) {
+      return `${this.publicUrl}/${normalizedKey}`;
+    }
+    return `/api/uploads/${normalizedKey}`;
+  }
+}
+
+// Choose active storage provider based on environment config
+const isR2Configured = 
+  !!process.env.R2_ACCOUNT_ID &&
+  !!process.env.R2_ACCESS_KEY_ID &&
+  !!process.env.R2_SECRET_ACCESS_KEY;
+
+export const storageProvider: StorageProvider = isR2Configured
+  ? new R2StorageProvider()
+  : new LocalStorageProvider();

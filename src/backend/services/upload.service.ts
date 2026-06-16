@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { prisma } from "@/lib/prisma";
 import { storageProvider } from "@/lib/storage/storage.provider";
 import { ImageType } from "@prisma/client";
@@ -32,6 +31,10 @@ export class UploadService {
     let isWebp = true;
 
     try {
+      // Dynamically import sharp to prevent crashes if it is missing or incompatible on Vercel
+      const sharpModule = await import("sharp");
+      const sharp = sharpModule.default;
+
       // 3. Extract dimensions and validate that it's a valid image using sharp
       const imageInfo = sharp(buffer);
       const metadata = await imageInfo.metadata();

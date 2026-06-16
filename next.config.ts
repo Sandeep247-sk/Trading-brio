@@ -46,7 +46,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   // Server external packages
-  serverExternalPackages: ["argon2"],
+  serverExternalPackages: ["argon2", "sharp"],
 };
 
 export default nextConfig;
