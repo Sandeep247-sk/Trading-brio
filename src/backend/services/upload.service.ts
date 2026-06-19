@@ -30,31 +30,9 @@ export class UploadService {
     let height: number | undefined;
     let isWebp = true;
 
-    try {
-      // Dynamically import sharp to prevent crashes if it is missing or incompatible on Vercel
-      const sharpModule = await import("sharp");
-      const sharp = sharpModule.default;
-
-      // 3. Extract dimensions and validate that it's a valid image using sharp
-      const imageInfo = sharp(buffer);
-      const metadata = await imageInfo.metadata();
-      
-      if (!metadata.width || !metadata.height) {
-        throw new Error("Invalid image dimensions");
-      }
-      
-      width = metadata.width;
-      height = metadata.height;
-
-      // 4. Convert and optimize to WebP with quality 80
-      optimizedBuffer = await imageInfo
-        .webp({ quality: 80 })
-        .toBuffer();
-    } catch (error: any) {
-      console.error("Image optimization failed, falling back to original buffer:", error);
-      isWebp = false;
-    }
-
+ // TEMPORARY TEST
+  optimizedBuffer = buffer;
+  isWebp = false;
     // 5. Generate unique UUID filename
     const uuid = crypto.randomUUID();
     const typeFolder = type.toLowerCase().replace(/_/g, "-");
