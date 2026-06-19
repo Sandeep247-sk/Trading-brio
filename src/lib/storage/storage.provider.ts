@@ -166,3 +166,14 @@ const isR2Configured =
 export const storageProvider: StorageProvider = isR2Configured
   ? new R2StorageProvider()
   : new LocalStorageProvider();
+
+console.log(
+  "Using storage provider:",
+  storageProvider.constructor.name
+);
+
+console.log("R2_ACCOUNT_ID:", !!process.env.R2_ACCOUNT_ID);
+console.log("R2_ACCESS_KEY_ID:", !!process.env.R2_ACCESS_KEY_ID);
+console.log("R2_SECRET_ACCESS_KEY:", !!process.env.R2_SECRET_ACCESS_KEY);
+console.log("R2_BUCKET_NAME:", !!process.env.R2_BUCKET_NAME);
+console.log("R2_PUBLIC_URL:", !!process.env.R2_PUBLIC_URL);
