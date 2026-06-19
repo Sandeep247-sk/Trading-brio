@@ -10,9 +10,9 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const poppins = Poppins({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
