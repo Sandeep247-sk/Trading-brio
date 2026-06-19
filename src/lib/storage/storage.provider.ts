@@ -158,22 +158,18 @@ export class R2StorageProvider implements StorageProvider {
 }
 
 // Choose active storage provider based on environment config
-const isR2Configured = 
-  !!process.env.R2_ACCOUNT_ID &&
-  !!process.env.R2_ACCESS_KEY_ID &&
-  !!process.env.R2_SECRET_ACCESS_KEY;
+import { SupabaseStorageProvider } from "./supabase.provider";
 
-export const storageProvider: StorageProvider = isR2Configured
-  ? new R2StorageProvider()
-  : new LocalStorageProvider();
+const isSupabaseConfigured =
+  !!process.env.SUPABASE_URL &&
+  !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+export const storageProvider: StorageProvider =
+  isSupabaseConfigured
+    ? (new SupabaseStorageProvider() as any)
+    : new LocalStorageProvider();
 
 console.log(
-  "Using storage provider:",
-  storageProvider.constructor.name
+  "Storage Type:",
+  isSupabaseConfigured ? "SUPABASE" : "LOCAL"
 );
-
-console.log("R2_ACCOUNT_ID:", !!process.env.R2_ACCOUNT_ID);
-console.log("R2_ACCESS_KEY_ID:", !!process.env.R2_ACCESS_KEY_ID);
-console.log("R2_SECRET_ACCESS_KEY:", !!process.env.R2_SECRET_ACCESS_KEY);
-console.log("R2_BUCKET_NAME:", !!process.env.R2_BUCKET_NAME);
-console.log("R2_PUBLIC_URL:", !!process.env.R2_PUBLIC_URL);
