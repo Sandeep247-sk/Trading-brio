@@ -4,8 +4,9 @@ import { auth } from "@/lib/auth";
 import { TradeService } from "@/services/trade.service";
 import { TradeActions } from "@/components/journal/trade-actions";
 import { ScreenshotGallery } from "@/components/journal/screenshot-gallery";
+import { ExpandableNotes } from "@/components/journal/expandable-notes";
 import { Direction, TradeResult, ImageType, RuleCategory } from "@prisma/client";
-import { ArrowUpRight, ArrowDownRight, Minus, Calendar, ShieldAlert, Sparkles, BookOpen } from "lucide-react";
+import { Calendar, Sparkles } from "lucide-react";
 import { TradeAiAudit } from "@/components/journal/trade-ai-audit";
 
 export async function generateMetadata({
@@ -49,12 +50,35 @@ export default async function TradeDetailPage({
   // Get active strategy rules
   const rules = trade.strategyVersion?.rules || [];
 
+  // Fetch the latest analysis
+  const latestAnalysis = trade.analyses && trade.analyses.length > 0
+    ? [...trade.analyses].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0]
+    : null;
+
+  const getGradeColors = (grade: string) => {
+    switch (grade) {
+      case "A_PLUS":
+      case "A":
+        return "bg-emerald-600/10 border-emerald-500/30 text-emerald-400";
+      case "B":
+        return "bg-blue-600/10 border-blue-500/30 text-blue-400";
+      case "C":
+        return "bg-amber-600/10 border-amber-500/30 text-amber-400";
+      case "D":
+      default:
+        return "bg-red-600/10 border-red-500/30 text-red-400";
+    }
+  };
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header and actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 relative pb-12 print:p-0">
+      
+      {/* Sticky Header and actions */}
+      <div className="sticky top-0 z-30 bg-gray-950/95 backdrop-blur-md border-b border-gray-900 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg print:relative print:border-none print:shadow-none">
         <div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-2xl font-bold tracking-tight text-white">
               {trade.pair} Execution Detail
             </h1>
@@ -84,6 +108,12 @@ export default async function TradeDetailPage({
                 Open
               </span>
             )}
+            {/* Sticky Grade Badge */}
+            {latestAnalysis && (
+              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wide border ${getGradeColors(latestAnalysis.grade)}`}>
+                GRADE {latestAnalysis.grade.replace("_PLUS", "+")}
+              </span>
+            )}
           </div>
           <div className="flex items-center space-x-1.5 text-xs text-gray-400 mt-1 font-mono">
             <Calendar className="h-3.5 w-3.5 text-gray-500" />
@@ -99,7 +129,9 @@ export default async function TradeDetailPage({
             <span className="uppercase">{trade.session.replace(/_/g, " ")} Session</span>
           </div>
         </div>
-        <TradeActions tradeId={trade.id} />
+        <div className="print:hidden">
+          <TradeActions tradeId={trade.id} />
+        </div>
       </div>
 
       {/* Main Stats Grid */}
@@ -134,34 +166,24 @@ export default async function TradeDetailPage({
         </div>
       </div>
 
-      {/* Columns: Left content, Right rules & AI */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-6">
-          {/* Notes Card */}
-          <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg space-y-3">
-            <h3 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-gray-500" />
-              Journal Notes & Context
-            </h3>
-            <div className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
-              {trade.notes || "No notes written for this trade entry."}
-            </div>
-          </div>
+      {/* Reorganized Vertical Flow */}
+      <div className="space-y-6">
+        {/* 1. Trade Notes & Context */}
+        <ExpandableNotes notes={trade.notes} />
 
-          {/* Screenshots Gallery */}
-          <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg space-y-4">
-            <h3 className="text-sm font-semibold text-gray-200">Execution Screenshots</h3>
-            <ScreenshotGallery screenshots={screenshots.map((s) => ({
-              id: s.id,
-              url: s.url,
-              type: s.type,
-              sizeBytes: s.sizeBytes,
-            }))} />
-          </div>
+        {/* 2. Execution Screenshots */}
+        <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg space-y-4">
+          <h3 className="text-sm font-semibold text-gray-200">Execution Screenshots</h3>
+          <ScreenshotGallery screenshots={screenshots.map((s) => ({
+            id: s.id,
+            url: s.url,
+            type: s.type,
+            sizeBytes: s.sizeBytes,
+          }))} />
         </div>
 
-        {/* Right column - Checklist & AI Actions */}
-        <div className="space-y-6">
+        {/* 3. AI Audit Results, Strategy Checklist, and Violations History (occupying entire content width) */}
+        <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg">
           <TradeAiAudit
             tradeId={trade.id}
             rules={rules.map((r: any) => ({
@@ -197,6 +219,15 @@ export default async function TradeDetailPage({
                   })()
                 : null
             }
+            violations={trade.violations.map((v: any) => ({
+              id: v.id,
+              description: v.description,
+              plImpact: v.plImpact,
+              category: {
+                name: v.category.name,
+                severity: v.category.severity,
+              }
+            }))}
           />
         </div>
       </div>
