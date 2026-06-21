@@ -68,9 +68,9 @@ export function Sidebar() {
         {!collapsed && (
           <div className="animate-fade-in">
             <h1 className="text-sm font-bold tracking-tight leading-none">
-              Trader <span className="gradient-text">Brio</span>
+              Trading <span className="gradient-text">Brio</span>
             </h1>
-            <p className="text-[10px] text-muted-foreground leading-none mt-0.5">v1.0</p>
+            <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Your Trading Operating System</p>
           </div>
         )}
       </div>
