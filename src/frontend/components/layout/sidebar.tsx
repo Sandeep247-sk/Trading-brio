@@ -62,8 +62,8 @@ export function Sidebar() {
         "flex items-center h-16 px-4 border-b border-sidebar-border",
         collapsed ? "justify-center" : "gap-3"
       )}>
-        <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-          <Shield className="w-4 h-4 text-primary" />
+        <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border border-sidebar-border bg-sidebar-accent/50">
+          <img src="/logo.jpg" alt="Trader Brio" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
           <div className="animate-fade-in">
