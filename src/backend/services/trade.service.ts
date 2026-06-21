@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Direction, TradeResult, TradingSession } from "@prisma/client";
 import { CreateTradeInput, UpdateTradeInput } from "@/lib/validations/trade";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 export interface TradeFilters {
   pair?: string;
@@ -30,15 +30,12 @@ export class TradeService {
       if (account) return account;
     }
 
-    let account = await prisma.account.findFirst({
-      where: { userId, isDefault: true },
-    });
-
-    if (!account) {
-      account = await prisma.account.findFirst({
-        where: { userId },
-      });
-    }
+  let account = await prisma.account.findFirst({
+  where: { userId },
+  orderBy: {
+    isDefault: "desc",
+  },
+});
 
     if (!account) {
       account = await prisma.account.create({
@@ -106,11 +103,25 @@ export class TradeService {
     const [trades, total] = await Promise.all([
       prisma.trade.findMany({
         where: whereClause,
-        include: {
-          images: true,
+        select: {
+          id: true,
+          pair: true,
+          date: true,
+          result: true,
+          pnl: true,
+          session: true,
+          direction: true,
+          riskPercent: true,
+          rrAchieved: true,
           strategyVersion: {
-            include: {
-              strategy: true,
+            select: {
+              id: true,
+              strategy: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -251,7 +262,7 @@ export class TradeService {
     });
 
     // Invalidate cached metrics for this account
-    updateTag(`account-${account.id}`);
+    revalidateTag(`account-${account.id}`, "max");
 
     return trade;
   }
@@ -313,7 +324,8 @@ export class TradeService {
     });
 
     // Invalidate cached metrics for this account
-    updateTag(`account-${existingTrade.accountId}`);
+    revalidateTag(`account-${existingTrade.accountId}`, "max");
+
 
     return trade;
   }
@@ -358,6 +370,6 @@ export class TradeService {
     });
 
     // Invalidate cached metrics for this account
-    updateTag(`account-${existingTrade.accountId}`);
+    revalidateTag(`account-${existingTrade.accountId}`, "max");
   }
 }

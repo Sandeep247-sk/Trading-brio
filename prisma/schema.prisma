@@ -1,6 +1,3 @@
-// Trading OS - Prisma Schema
-// PostgreSQL database with full normalized schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,9 +6,297 @@ datasource db {
   provider = "postgresql"
 }
 
-// ============================================================
-// ENUMS
-// ============================================================
+model User {
+  id               String          @id @default(uuid())
+  email            String          @unique
+  password         String
+  name             String
+  role             Role            @default(TRADER)
+  twoFactorEnabled Boolean         @default(false)
+  twoFactorSecret  String?
+  avatarUrl        String?
+  isActive         Boolean         @default(true)
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  accounts         Account[]
+  auditLogs        AuditLog[]
+  behaviorScores   BehaviorScore[]
+  ruleViolations   RuleViolation[]
+  strategies       Strategy[]
+  sessions         UserSession[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("user_sessions")
+}
+
+model Account {
+  id                 String          @id @default(uuid())
+  userId             String
+  name               String
+  brokerName         String?
+  accountType        AccountType     @default(LIVE)
+  platform           TradingPlatform @default(OTHER)
+  accountNumber      String?
+  startingBalance    Decimal         @db.Decimal(18, 2)
+  currentBalance     Decimal         @db.Decimal(18, 2)
+  currency           String          @default("USD")
+  isDefault          Boolean         @default(false)
+  maxRiskPerTrade    Decimal?        @db.Decimal(5, 2)
+  maxDailyDrawdown   Decimal?        @db.Decimal(5, 2)
+  maxWeeklyDrawdown  Decimal?        @db.Decimal(5, 2)
+  maxOverallDrawdown Decimal?        @db.Decimal(5, 2)
+  maxTradesPerDay    Int?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trades             Trade[]
+
+  @@index([userId])
+  @@index([userId, isDefault])
+  @@map("accounts")
+}
+
+model Trade {
+  id                String           @id @default(uuid())
+  accountId         String
+  pair              String
+  date              DateTime
+  session           TradingSession
+  direction         Direction
+  entryPrice        Decimal          @db.Decimal(18, 8)
+  stopLoss          Decimal          @db.Decimal(18, 8)
+  takeProfit        Decimal          @db.Decimal(18, 8)
+  riskPercent       Decimal          @db.Decimal(5, 2)
+  result            TradeResult?
+  rrAchieved        Decimal?         @db.Decimal(8, 2)
+  pnl               Decimal?         @db.Decimal(18, 2)
+  notes             String?
+  strategyVersionId String?
+  deletedAt         DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  violations        RuleViolation[]
+  analyses          TradeAnalysis[]
+  images            TradeImage[]
+  account           Account          @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  strategyVersion   StrategyVersion? @relation(fields: [strategyVersionId], references: [id])
+
+  @@index([accountId, deletedAt, result])
+  @@index([accountId, deletedAt, date])
+  @@index([accountId, deletedAt, pair, result])
+  @@index([accountId, deletedAt, session])
+  @@index([accountId, deletedAt, pnl])
+  @@index([strategyVersionId])
+  @@index([date])
+  @@map("trades")
+}
+
+model TradeImage {
+  id        String    @id @default(uuid())
+  tradeId   String
+  type      ImageType
+  url       String
+  key       String
+  mimeType  String
+  sizeBytes Int
+  createdAt DateTime  @default(now())
+  trade     Trade     @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId])
+  @@map("trade_images")
+}
+
+model TradeAnalysis {
+  id                 String     @id @default(uuid())
+  tradeId            String
+  matchScore         Int
+  executionScore     Int
+  disciplineScore    Int
+  grade              TradeGrade
+  checklist          Json
+  mistakes           Json
+  suggestions        Json
+  detectedViolations Json
+  rawResponse        Json
+  modelUsed          String
+  processingTimeMs   Int?
+  createdAt          DateTime   @default(now())
+  trade              Trade      @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId])
+  @@index([createdAt])
+  @@map("trade_analyses")
+}
+
+model Strategy {
+  id        String            @id @default(uuid())
+  userId    String
+  name      String
+  market    Market
+  isActive  Boolean           @default(true)
+  deletedAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions  StrategyVersion[]
+
+  @@index([userId, deletedAt])
+  @@map("strategies")
+}
+
+model StrategyVersion {
+  id                 String                       @id @default(uuid())
+  strategyId         String
+  version            Int
+  description        String?
+  preferredSessions  Json
+  higherTimeframes   Json
+  entryTimeframes    Json
+  entryConditions    Json
+  riskRules          Json
+  managementRules    Json
+  changelog          String?
+  isActive           Boolean                      @default(true)
+  createdAt          DateTime                     @default(now())
+  changeLogs         StrategyChangeLog[]
+  performanceHistory StrategyPerformanceHistory[]
+  rules              StrategyRule[]
+  strategy           Strategy                     @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  trades             Trade[]
+
+  @@unique([strategyId, version])
+  @@index([strategyId])
+  @@map("strategy_versions")
+}
+
+model StrategyRule {
+  id          String          @id @default(uuid())
+  versionId   String
+  category    RuleCategory
+  name        String
+  description String?
+  isRequired  Boolean         @default(true)
+  order       Int             @default(0)
+  createdAt   DateTime        @default(now())
+  version     StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("strategy_rules")
+}
+
+model StrategyChangeLog {
+  id         String          @id @default(uuid())
+  versionId  String
+  changeType String
+  field      String
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime        @default(now())
+  version    StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("strategy_change_logs")
+}
+
+model StrategyPerformanceHistory {
+  id             String          @id @default(uuid())
+  versionId      String
+  totalTrades    Int             @default(0)
+  winRate        Decimal         @default(0) @db.Decimal(5, 2)
+  profitFactor   Decimal         @default(0) @db.Decimal(8, 2)
+  averageRR      Decimal         @default(0) @db.Decimal(8, 2)
+  netProfit      Decimal         @default(0) @db.Decimal(18, 2)
+  adherenceScore Decimal         @default(0) @db.Decimal(5, 2)
+  executionScore Decimal         @default(0) @db.Decimal(5, 2)
+  calculatedAt   DateTime        @default(now())
+  version        StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("strategy_performance_history")
+}
+
+model ViolationCategory {
+  id          String          @id @default(uuid())
+  name        String          @unique
+  description String?
+  severity    Severity        @default(MEDIUM)
+  createdAt   DateTime        @default(now())
+  violations  RuleViolation[]
+
+  @@map("violation_categories")
+}
+
+model RuleViolation {
+  id          String            @id @default(uuid())
+  tradeId     String?
+  userId      String
+  categoryId  String
+  description String
+  plImpact    Decimal?          @db.Decimal(18, 2)
+  detectedBy  DetectedBy        @default(AI)
+  createdAt   DateTime          @default(now())
+  category    ViolationCategory @relation(fields: [categoryId], references: [id])
+  trade       Trade?            @relation(fields: [tradeId], references: [id])
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([tradeId])
+  @@index([categoryId])
+  @@map("rule_violations")
+}
+
+model BehaviorScore {
+  id               String   @id @default(uuid())
+  userId           String
+  period           String
+  periodType       String
+  disciplineScore  Decimal  @default(0) @db.Decimal(5, 2)
+  complianceScore  Decimal  @default(0) @db.Decimal(5, 2)
+  consistencyScore Decimal  @default(0) @db.Decimal(5, 2)
+  totalTrades      Int      @default(0)
+  calculatedAt     DateTime @default(now())
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, periodType])
+  @@index([userId, periodType])
+  @@map("behavior_scores")
+}
+
+model AuditLog {
+  id        String      @id @default(uuid())
+  userId    String?
+  action    AuditAction
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime    @default(now())
+  user      User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([entity, entityId])
+  @@index([action])
+  @@map("audit_logs")
+}
 
 enum Role {
   TRADER
@@ -103,339 +388,4 @@ enum AuditAction {
   LOGOUT
   EXPORT
   ANALYZE
-}
-
-// ============================================================
-// USER & ACCOUNT
-// ============================================================
-
-model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  password        String
-  name            String
-  role            Role      @default(TRADER)
-  twoFactorEnabled Boolean  @default(false)
-  twoFactorSecret String?
-  avatarUrl       String?
-  isActive        Boolean   @default(true)
-  deletedAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  accounts        Account[]
-  strategies      Strategy[]
-  ruleViolations  RuleViolation[]
-  behaviorScores  BehaviorScore[]
-  auditLogs       AuditLog[]
-  sessions        UserSession[]
-
-  @@index([email])
-  @@index([role])
-  @@map("users")
-}
-
-model UserSession {
-  id          String   @id @default(uuid())
-  userId      String
-  token       String   @unique
-  userAgent   String?
-  ipAddress   String?
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([token])
-  @@map("user_sessions")
-}
-
-model Account {
-  id                  String          @id @default(uuid())
-  userId              String
-  name                String
-  brokerName          String?
-  accountType         AccountType     @default(LIVE)
-  platform            TradingPlatform @default(OTHER)
-  accountNumber       String?
-  startingBalance     Decimal         @db.Decimal(18, 2)
-  currentBalance      Decimal         @db.Decimal(18, 2)
-  currency            String          @default("USD")
-  isDefault           Boolean         @default(false)
-
-  // Risk Rules
-  maxRiskPerTrade     Decimal?        @db.Decimal(5, 2)
-  maxDailyDrawdown    Decimal?        @db.Decimal(5, 2)
-  maxWeeklyDrawdown   Decimal?        @db.Decimal(5, 2)
-  maxOverallDrawdown  Decimal?        @db.Decimal(5, 2)
-  maxTradesPerDay     Int?
-
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-
-  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trades              Trade[]
-
-  @@index([userId])
-  @@index([userId, isDefault])
-  @@map("accounts")
-}
-
-// ============================================================
-// TRADES
-// ============================================================
-
-model Trade {
-  id                String        @id @default(uuid())
-  accountId         String
-  pair              String
-  date              DateTime
-  session           TradingSession
-  direction         Direction
-  entryPrice        Decimal       @db.Decimal(18, 8)
-  stopLoss          Decimal       @db.Decimal(18, 8)
-  takeProfit        Decimal       @db.Decimal(18, 8)
-  riskPercent       Decimal       @db.Decimal(5, 2)
-  result            TradeResult?
-  rrAchieved        Decimal?      @db.Decimal(8, 2)
-  pnl               Decimal?      @db.Decimal(18, 2)
-  notes             String?       @db.Text
-  strategyVersionId String?
-  deletedAt         DateTime?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  account           Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  strategyVersion   StrategyVersion? @relation(fields: [strategyVersionId], references: [id])
-  images            TradeImage[]
-  analyses          TradeAnalysis[]
-  violations        RuleViolation[]
-
-  @@index([accountId, date])
-  @@index([accountId, session])
-  @@index([accountId, result])
-  @@index([accountId, deletedAt])
-  @@index([accountId, deletedAt, result])
-  @@index([accountId, deletedAt, date])
-  @@index([strategyVersionId])
-  @@index([date])
-  @@map("trades")
-}
-
-model TradeImage {
-  id          String    @id @default(uuid())
-  tradeId     String
-  type        ImageType
-  url         String
-  key         String    // S3/R2 object key
-  mimeType    String
-  sizeBytes   Int
-  createdAt   DateTime  @default(now())
-
-  trade       Trade     @relation(fields: [tradeId], references: [id], onDelete: Cascade)
-
-  @@index([tradeId])
-  @@map("trade_images")
-}
-
-model TradeAnalysis {
-  id              String     @id @default(uuid())
-  tradeId         String
-  matchScore      Int        // 0-100
-  executionScore  Int        // 0-100
-  disciplineScore Int        // 0-100
-  grade           TradeGrade
-  checklist       Json       // Array of {rule: string, detected: boolean}
-  mistakes        Json       // Array of strings
-  suggestions     Json       // Array of strings
-  detectedViolations Json    // Array of violation objects
-  rawResponse     Json       // Full AI response
-  modelUsed       String     // e.g., "gemini-2.5-flash"
-  processingTimeMs Int?
-  createdAt       DateTime   @default(now())
-
-  trade           Trade      @relation(fields: [tradeId], references: [id], onDelete: Cascade)
-
-  @@index([tradeId])
-  @@index([createdAt])
-  @@map("trade_analyses")
-}
-
-// ============================================================
-// STRATEGY
-// ============================================================
-
-model Strategy {
-  id          String    @id @default(uuid())
-  userId      String
-  name        String
-  market      Market
-  isActive    Boolean   @default(true)
-  deletedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  versions    StrategyVersion[]
-
-  @@index([userId])
-  @@map("strategies")
-}
-
-model StrategyVersion {
-  id                String    @id @default(uuid())
-  strategyId        String
-  version           Int
-  description       String?   @db.Text
-  preferredSessions Json      // Array of TradingSession
-  higherTimeframes  Json      // Array of strings
-  entryTimeframes   Json      // Array of strings
-  entryConditions   Json      // Array of strings
-  riskRules         Json      // Array of rule objects
-  managementRules   Json      // Array of rule objects
-  changelog         String?   @db.Text
-  isActive          Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-
-  strategy          Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
-  rules             StrategyRule[]
-  trades            Trade[]
-  changeLogs        StrategyChangeLog[]
-  performanceHistory StrategyPerformanceHistory[]
-
-  @@unique([strategyId, version])
-  @@index([strategyId])
-  @@map("strategy_versions")
-}
-
-model StrategyRule {
-  id          String       @id @default(uuid())
-  versionId   String
-  category    RuleCategory
-  name        String
-  description String?      @db.Text
-  isRequired  Boolean      @default(true)
-  order       Int          @default(0)
-  createdAt   DateTime     @default(now())
-
-  version     StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-
-  @@index([versionId])
-  @@map("strategy_rules")
-}
-
-model StrategyChangeLog {
-  id          String    @id @default(uuid())
-  versionId   String
-  changeType  String    // ADDED, REMOVED, MODIFIED
-  field       String
-  oldValue    String?   @db.Text
-  newValue    String?   @db.Text
-  createdAt   DateTime  @default(now())
-
-  version     StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-
-  @@index([versionId])
-  @@map("strategy_change_logs")
-}
-
-model StrategyPerformanceHistory {
-  id              String    @id @default(uuid())
-  versionId       String
-  totalTrades     Int       @default(0)
-  winRate         Decimal   @db.Decimal(5, 2) @default(0)
-  profitFactor    Decimal   @db.Decimal(8, 2) @default(0)
-  averageRR       Decimal   @db.Decimal(8, 2) @default(0)
-  netProfit       Decimal   @db.Decimal(18, 2) @default(0)
-  adherenceScore  Decimal   @db.Decimal(5, 2) @default(0)
-  executionScore  Decimal   @db.Decimal(5, 2) @default(0)
-  calculatedAt    DateTime  @default(now())
-
-  version         StrategyVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-
-  @@index([versionId])
-  @@map("strategy_performance_history")
-}
-
-// ============================================================
-// RULE VIOLATIONS
-// ============================================================
-
-model ViolationCategory {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  description String?   @db.Text
-  severity    Severity  @default(MEDIUM)
-  createdAt   DateTime  @default(now())
-
-  violations  RuleViolation[]
-
-  @@map("violation_categories")
-}
-
-model RuleViolation {
-  id          String     @id @default(uuid())
-  tradeId     String?
-  userId      String
-  categoryId  String
-  description String     @db.Text
-  plImpact    Decimal?   @db.Decimal(18, 2)
-  detectedBy  DetectedBy @default(AI)
-  createdAt   DateTime   @default(now())
-
-  trade       Trade?     @relation(fields: [tradeId], references: [id], onDelete: SetNull)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category    ViolationCategory @relation(fields: [categoryId], references: [id])
-
-  @@index([userId, createdAt])
-  @@index([tradeId])
-  @@index([categoryId])
-  @@map("rule_violations")
-}
-
-// ============================================================
-// BEHAVIOR & ANALYTICS
-// ============================================================
-
-model BehaviorScore {
-  id              String    @id @default(uuid())
-  userId          String
-  period          String    // e.g., "2024-W01", "2024-01", "2024"
-  periodType      String    // WEEKLY, MONTHLY, YEARLY
-  disciplineScore Decimal   @db.Decimal(5, 2) @default(0)
-  complianceScore Decimal   @db.Decimal(5, 2) @default(0)
-  consistencyScore Decimal  @db.Decimal(5, 2) @default(0)
-  totalTrades     Int       @default(0)
-  calculatedAt    DateTime  @default(now())
-  createdAt       DateTime  @default(now())
-
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, period, periodType])
-  @@index([userId, periodType])
-  @@map("behavior_scores")
-}
-
-// ============================================================
-// AUDIT LOGGING
-// ============================================================
-
-model AuditLog {
-  id        String      @id @default(uuid())
-  userId    String?
-  action    AuditAction
-  entity    String      // e.g., "trade", "strategy", "user"
-  entityId  String?
-  details   Json?
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime    @default(now())
-
-  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId, createdAt])
-  @@index([entity, entityId])
-  @@index([action])
-  @@map("audit_logs")
 }

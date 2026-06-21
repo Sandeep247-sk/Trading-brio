@@ -164,13 +164,13 @@ export function Header() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem render={
-              <Link href="/settings" className="cursor-pointer" />
+              <Link href="/settings" className="cursor-pointer" prefetch={false} />
             }>
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem render={
-              <Link href="/settings" className="cursor-pointer" />
+              <Link href="/settings" className="cursor-pointer" prefetch={false} />
             }>
               <Settings className="mr-2 h-4 w-4" />
               Settings

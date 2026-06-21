@@ -279,50 +279,64 @@ export class StrategyService {
    * Recalculates metrics for a strategy version based on trade history.
    */
   static async calculateStrategyPerformance(userId: string, versionId: string) {
-    const trades = await prisma.trade.findMany({
-      where: {
-        strategyVersionId: versionId,
-        deletedAt: null,
-        result: { not: null },
-      },
+    const baseWhere = {
+      strategyVersionId: versionId,
+      deletedAt: null,
+      result: { not: null },
+    };
+
+    const totalTrades = await prisma.trade.count({
+      where: baseWhere,
     });
 
-    if (trades.length === 0) return null;
+    if (totalTrades === 0) return null;
 
-    const totalTrades = trades.length;
-    const wins = trades.filter((t) => t.result === "WIN");
-    const losses = trades.filter((t) => t.result === "LOSS");
+    const [winsCount, lossesCount, pnlAgg, rrAgg, grossProfitAgg, grossLossAgg, analysisAgg] = await Promise.all([
+      prisma.trade.count({
+        where: { ...baseWhere, result: "WIN" },
+      }),
+      prisma.trade.count({
+        where: { ...baseWhere, result: "LOSS" },
+      }),
+      prisma.trade.aggregate({
+        where: baseWhere,
+        _sum: { pnl: true },
+      }),
+      prisma.trade.aggregate({
+        where: { ...baseWhere, rrAchieved: { not: null } },
+        _avg: { rrAchieved: true },
+      }),
+      prisma.trade.aggregate({
+        where: { ...baseWhere, pnl: { gt: 0 } },
+        _sum: { pnl: true },
+      }),
+      prisma.trade.aggregate({
+        where: { ...baseWhere, pnl: { lt: 0 } },
+        _sum: { pnl: true },
+      }),
+      prisma.tradeAnalysis.aggregate({
+        where: {
+          trade: {
+            strategyVersionId: versionId,
+            deletedAt: null,
+            result: { not: null },
+          },
+        },
+        _avg: {
+          matchScore: true,
+          executionScore: true,
+        },
+      }),
+    ]);
 
-    const winRate = (wins.length / totalTrades) * 100;
-    
-    // Net profit
-    const netProfit = trades.reduce((acc, t) => acc + (t.pnl ? Number(t.pnl) : 0), 0);
-
-    // Average RR achieved
-    const validRRTrades = trades.filter((t) => t.rrAchieved !== null);
-    const averageRR = validRRTrades.length > 0
-      ? validRRTrades.reduce((acc, t) => acc + Number(t.rrAchieved), 0) / validRRTrades.length
-      : 0;
-
-    // Profit Factor = Gross Profit / Gross Loss
-    const grossProfit = wins.reduce((acc, t) => acc + (t.pnl ? Number(t.pnl) : 0), 0);
-    const grossLoss = Math.abs(losses.reduce((acc, t) => acc + (t.pnl ? Number(t.pnl) : 0), 0));
+    const winRate = (winsCount / totalTrades) * 100;
+    const netProfit = Number(pnlAgg._sum.pnl ?? 0);
+    const grossProfit = Number(grossProfitAgg._sum.pnl ?? 0);
+    const grossLoss = Math.abs(Number(grossLossAgg._sum.pnl ?? 0));
     const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? 99.99 : 0;
-
-    // Fetch associated analysis scores (from Phase 4 AI engine)
-    const analyses = await prisma.tradeAnalysis.findMany({
-      where: {
-        tradeId: { in: trades.map((t) => t.id) },
-      },
-    });
-
-    const avgAdherence = analyses.length > 0
-      ? analyses.reduce((acc, a) => acc + a.matchScore, 0) / analyses.length
-      : 80; // Default placeholder fallback
-
-    const avgExecution = analyses.length > 0
-      ? analyses.reduce((acc, a) => acc + a.executionScore, 0) / analyses.length
-      : 80;
+    const averageRR = rrAgg._avg.rrAchieved !== null ? Number(rrAgg._avg.rrAchieved) : 0;
+    const avgAdherence = analysisAgg._avg.matchScore !== null ? Number(analysisAgg._avg.matchScore) : 80;
+    const avgExecution = analysisAgg._avg.executionScore !== null ? Number(analysisAgg._avg.executionScore) : 80;
 
     return prisma.strategyPerformanceHistory.create({
       data: {

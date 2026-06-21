@@ -3,6 +3,23 @@ import { CreateAccountInput, UpdateAccountInput } from "@/lib/validations/accoun
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
+const accountMetricsCacheMap = new Map<string, ReturnType<typeof unstable_cache>>();
+
+const getAccountMetricsCached = (userId: string, accountId: string) => {
+  let cachedFn = accountMetricsCacheMap.get(accountId);
+  if (!cachedFn) {
+    cachedFn = unstable_cache(
+      async () => {
+        return AccountService._computeAccountMetrics(userId, accountId);
+      },
+      [`account-metrics-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    accountMetricsCacheMap.set(accountId, cachedFn);
+  }
+  return cachedFn();
+};
+
 export class AccountService {
   /**
    * List all accounts for a specific user.
@@ -181,28 +198,13 @@ export class AccountService {
    * OPTIMIZED: Uses SQL aggregates + groupBy instead of fetching all trades into memory.
    */
   static async getAccountMetrics(userId: string, accountId: string) {
-    return this._getAccountMetricsCached(userId, accountId);
+    return getAccountMetricsCached(userId, accountId);
   }
-
-  /**
-   * Cached version of account metrics. Revalidates every 60 seconds,
-   * or immediately when trades are created/updated/deleted via revalidateTag.
-   */
-  private static _getAccountMetricsCached = (userId: string, accountId: string) => {
-    const fn = unstable_cache(
-      async () => {
-        return AccountService._computeAccountMetrics(userId, accountId);
-      },
-      [`account-metrics-${accountId}`],
-      { revalidate: 60, tags: [`account-${accountId}`] }
-    );
-    return fn();
-  };
 
   /**
    * Core metrics computation using SQL aggregates.
    */
-  private static async _computeAccountMetrics(userId: string, accountId: string) {
+  public static async _computeAccountMetrics(userId: string, accountId: string) {
     // Date boundaries for drawdown calculations
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);

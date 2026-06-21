@@ -85,10 +85,17 @@ export class UploadService {
     // Enforce ownership
     const image = await prisma.tradeImage.findUnique({
       where: { id: imageId },
-      include: {
+      select: {
+        id: true,
+        key: true,
+        tradeId: true,
         trade: {
-          include: {
-            account: true,
+          select: {
+            account: {
+              select: {
+                userId: true,
+              },
+            },
           },
         },
       },

@@ -29,20 +29,24 @@ export default async function AnalyticsPage() {
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || null;
   const account = await TradeService.getOrCreateUserAccount(session.user.id, selectedAccountId);
   
-  // Fetch ALL data in parallel — accounts, metrics, and analytics
-  const [accountsList, metrics, equityCurve, monthlyPnl, pairPerformance, sessionDist, pnlDistribution] =
+  // Fetch ALL data in parallel — accounts, metrics, and analytics bundle
+  const [accountsList, metrics, analyticsBundle] =
     await Promise.all([
       prisma.account.findMany({
         where: { userId: session.user.id },
         select: { id: true, name: true, currency: true },
       }),
       AccountService.getAccountMetrics(session.user.id, account.id),
-      AnalyticsService.getEquityCurve(session.user.id, account.id),
-      AnalyticsService.getMonthlyPnl(session.user.id, account.id),
-      AnalyticsService.getPairPerformance(session.user.id, account.id),
-      AnalyticsService.getSessionDistribution(session.user.id, account.id),
-      AnalyticsService.getPnlDistribution(session.user.id, account.id),
+      AnalyticsService.getAnalyticsBundle(session.user.id, account.id),
     ]);
+
+  const {
+    equityCurve,
+    monthlyPnl,
+    pairPerformance,
+    sessionDistribution: sessionDist,
+    pnlDistribution,
+  } = analyticsBundle;
 
   const currency = metrics.accountInfo.currency;
 
