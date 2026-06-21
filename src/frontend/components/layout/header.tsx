@@ -92,12 +92,12 @@ export function Header() {
           } />
           <SheetContent side="left" className="w-[280px] bg-sidebar p-0">
             <SheetHeader className="p-4 border-b border-sidebar-border">
-              <SheetTitle className="flex items-center gap-2">
+              <SheetTitle className="flex items-center gap-2.5">
                 <div className="w-5 h-5 rounded overflow-hidden flex items-center justify-center border border-sidebar-border bg-sidebar-accent/50 shrink-0">
-                  <img src="/logo.jpg" alt="Trader Brio" className="w-full h-full object-cover" />
+                  <img src="/logo.jpg" alt="Trading Brio" className="w-full h-full object-cover" />
                 </div>
                 <span>
-                  Trader <span className="gradient-text">Brio</span>
+                  Trading <span className="gradient-text">Brio</span>
                 </span>
               </SheetTitle>
             </SheetHeader>

@@ -57,20 +57,19 @@ export function Sidebar() {
         collapsed ? "w-[68px]" : "w-[240px]"
       )}
     >
-      {/* Logo */}
       <div className={cn(
         "flex items-center h-16 px-4 border-b border-sidebar-border",
-        collapsed ? "justify-center" : "gap-3"
+        collapsed ? "justify-center" : "gap-3.5"
       )}>
         <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border border-sidebar-border bg-sidebar-accent/50">
-          <img src="/logo.jpg" alt="Trader Brio" className="w-full h-full object-cover" />
+          <img src="/logo.jpg" alt="Trading Brio" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in pl-0.5">
             <h1 className="text-sm font-bold tracking-tight leading-none">
               Trading <span className="gradient-text">Brio</span>
             </h1>
-            <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Your Trading Operating System</p>
+            <p className="text-[9px] text-muted-foreground leading-normal mt-1.5">Your Trading Operating System</p>
           </div>
         )}
       </div>
