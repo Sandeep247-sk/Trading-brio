@@ -178,6 +178,7 @@ model Account {
   trades              Trade[]
 
   @@index([userId])
+  @@index([userId, isDefault])
   @@map("accounts")
 }
 
@@ -214,6 +215,9 @@ model Trade {
   @@index([accountId, date])
   @@index([accountId, session])
   @@index([accountId, result])
+  @@index([accountId, deletedAt])
+  @@index([accountId, deletedAt, result])
+  @@index([accountId, deletedAt, date])
   @@index([strategyVersionId])
   @@index([date])
   @@map("trades")

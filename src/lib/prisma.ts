@@ -33,7 +33,7 @@ export const prisma =
     adapter,
     log:
       process.env.NODE_ENV === "development"
-        ? ["error", "warn"]
+        ? ["query", "error", "warn"]
         : ["error"],
   });
 

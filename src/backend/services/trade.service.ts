@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Direction, TradeResult, TradingSession } from "@prisma/client";
 import { CreateTradeInput, UpdateTradeInput } from "@/lib/validations/trade";
+import { updateTag } from "next/cache";
 
 export interface TradeFilters {
   pair?: string;
@@ -249,6 +250,9 @@ export class TradeService {
       return newTrade;
     });
 
+    // Invalidate cached metrics for this account
+    updateTag(`account-${account.id}`);
+
     return trade;
   }
 
@@ -308,6 +312,9 @@ export class TradeService {
       return updatedTrade;
     });
 
+    // Invalidate cached metrics for this account
+    updateTag(`account-${existingTrade.accountId}`);
+
     return trade;
   }
 
@@ -349,5 +356,8 @@ export class TradeService {
         },
       });
     });
+
+    // Invalidate cached metrics for this account
+    updateTag(`account-${existingTrade.accountId}`);
   }
 }

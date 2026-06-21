@@ -193,23 +193,23 @@ export class BehaviorService {
   static async generateInsights(userId: string): Promise<CoachingInsight[]> {
     const insights: CoachingInsight[] = [];
 
-    // Fetch recent violations
-    const recentViolations = await prisma.ruleViolation.findMany({
-      where: {
-        userId,
-        createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-      },
-      include: { category: true, trade: true },
-    });
-
-    // Fetch recent trades
-    const recentTrades = await prisma.trade.findMany({
-      where: {
-        account: { userId },
-        deletedAt: null,
-        date: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-      },
-    });
+    // Fetch recent violations and trades in parallel
+    const [recentViolations, recentTrades] = await Promise.all([
+      prisma.ruleViolation.findMany({
+        where: {
+          userId,
+          createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
+        include: { category: true, trade: true },
+      }),
+      prisma.trade.findMany({
+        where: {
+          account: { userId },
+          deletedAt: null,
+          date: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
+      }),
+    ]);
 
     // Violation pattern analysis
     const categoryCount: Record<string, number> = {};

@@ -18,19 +18,15 @@ export default async function CoachingPage() {
 
   const userId = session.user.id;
 
-  // Calculate current weekly score (or use latest)
+  // Calculate current weekly score first (writes data, must be sequential)
   const currentScore = await BehaviorService.calculateAndStore(userId, "WEEKLY");
 
-  // Get weekly trend (last 12 weeks)
-  const trend = await BehaviorService.getTrend(userId, "WEEKLY", 12);
-
-  // Get coaching insights
-  const insights = await BehaviorService.generateInsights(userId);
-
-  // Get 30-day stats
+  // Then fetch all read-only data in parallel
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  const [violationCount, totalTrades30d] = await Promise.all([
+  const [trend, insights, violationCount, totalTrades30d] = await Promise.all([
+    BehaviorService.getTrend(userId, "WEEKLY", 12),
+    BehaviorService.generateInsights(userId),
     prisma.ruleViolation.count({
       where: {
         userId,

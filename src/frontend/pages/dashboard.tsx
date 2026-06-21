@@ -40,17 +40,13 @@ export default async function DashboardPage() {
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || null;
   const account = await TradeService.getOrCreateUserAccount(session.user.id, selectedAccountId);
 
-  // Fetch all user accounts
-  const accountsList = await prisma.account.findMany({
-    where: { userId: session.user.id },
-    select: { id: true, name: true, currency: true },
-  });
-
-  // Fetch full metrics for the selected account
-  const metrics = await AccountService.getAccountMetrics(session.user.id, account.id);
-
-  // Fetch recent trades and equity curve in parallel
-  const [{ trades: recentTrades }, equityCurve] = await Promise.all([
+  // Fetch all data in parallel — critical optimization
+  const [accountsList, metrics, { trades: recentTrades }, equityCurve] = await Promise.all([
+    prisma.account.findMany({
+      where: { userId: session.user.id },
+      select: { id: true, name: true, currency: true },
+    }),
+    AccountService.getAccountMetrics(session.user.id, account.id),
     TradeService.getTrades(session.user.id, {}, { page: 1, limit: 5 }, account.id),
     AnalyticsService.getEquityCurve(session.user.id, account.id),
   ]);

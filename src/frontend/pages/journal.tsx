@@ -55,48 +55,48 @@ export default async function JournalPage({
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || null;
   const account = await TradeService.getOrCreateUserAccount(session.user.id, selectedAccountId);
 
-  // Fetch all user accounts
-  const accountsList = await prisma.account.findMany({
-    where: { userId: session.user.id },
-    select: { id: true, name: true, currency: true },
-  });
+  // Fetch ALL data in parallel — accounts, trades, strategies, and aggregate stats
+  const statsWhere = { accountId: account.id, deletedAt: null as null };
 
-  // 1. Fetch trades
-  const { trades, total, pages } = await TradeService.getTrades(
-    session.user.id,
-    filters,
-    { page, limit },
-    account.id
-  );
+  const [
+    accountsList,
+    { trades, total, pages },
+    strategiesList,
+    tradeAgg,
+    winCount,
+    rrAgg,
+  ] = await Promise.all([
+    // 1. User accounts
+    prisma.account.findMany({
+      where: { userId: session.user.id },
+      select: { id: true, name: true, currency: true },
+    }),
+    // 2. Paginated trades
+    TradeService.getTrades(session.user.id, filters, { page, limit }, account.id),
+    // 3. Strategies for filter dropdown
+    prisma.strategy.findMany({
+      where: { userId: session.user.id, deletedAt: null },
+      select: { id: true, name: true },
+    }),
+    // 4. Aggregate stats — replaces fetching ALL trades
+    prisma.trade.aggregate({
+      where: statsWhere,
+      _count: { _all: true },
+      _sum: { pnl: true },
+    }),
+    // 5. Win count
+    prisma.trade.count({ where: { ...statsWhere, result: "WIN" } }),
+    // 6. Average RR
+    prisma.trade.aggregate({
+      where: { ...statsWhere, rrAchieved: { not: null } },
+      _avg: { rrAchieved: true },
+    }),
+  ]);
 
-  // 2. Fetch all user strategies for the filter dropdown
-  const strategiesList = await prisma.strategy.findMany({
-    where: { userId: session.user.id, deletedAt: null },
-    select: { id: true, name: true },
-  });
-
-  // 3. Aggregate high-level stats for the current filtered/overall state
-  const allAccountTrades = await prisma.trade.findMany({
-    where: {
-      accountId: account.id,
-      deletedAt: null,
-    },
-    select: {
-      result: true,
-      pnl: true,
-      rrAchieved: true,
-    },
-  });
-
-  const totalTradesCount = allAccountTrades.length;
-  const wins = allAccountTrades.filter((t) => t.result === "WIN");
-  const winRate = totalTradesCount > 0 ? (wins.length / totalTradesCount) * 100 : 0;
-  const totalPnl = allAccountTrades.reduce((acc, t) => acc + (t.pnl ? Number(t.pnl) : 0), 0);
-  
-  const tradesWithRR = allAccountTrades.filter((t) => t.rrAchieved !== null);
-  const avgRR = tradesWithRR.length > 0 
-    ? tradesWithRR.reduce((acc, t) => acc + Number(t.rrAchieved), 0) / tradesWithRR.length 
-    : 0;
+  const totalTradesCount = tradeAgg._count._all;
+  const winRate = totalTradesCount > 0 ? (winCount / totalTradesCount) * 100 : 0;
+  const totalPnl = Number(tradeAgg._sum.pnl ?? 0);
+  const avgRR = Number(rrAgg._avg.rrAchieved ?? 0);
 
   return (
     <div className="space-y-6 animate-fade-in">

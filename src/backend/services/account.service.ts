@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { CreateAccountInput, UpdateAccountInput } from "@/lib/validations/account";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 export class AccountService {
   /**
@@ -12,19 +13,14 @@ export class AccountService {
       orderBy: { createdAt: "desc" },
     });
   }
-
+  
   /**
    * Get specific account details.
+   * NOTE: No longer includes all trades — use getAccountMetrics() for metrics.
    */
   static async getAccountById(userId: string, accountId: string) {
     const account = await prisma.account.findFirst({
       where: { id: accountId, userId },
-      include: {
-        trades: {
-          where: { deletedAt: null },
-          orderBy: { date: "asc" },
-        },
-      },
     });
 
     if (!account) {
@@ -79,7 +75,7 @@ export class AccountService {
    * Update an existing account configuration.
    */
   static async updateAccount(userId: string, accountId: string, input: UpdateAccountInput) {
-    // Check ownership
+    // Check ownership (lightweight — no trade include)
     await this.getAccountById(userId, accountId);
 
     return prisma.$transaction(async (tx) => {
@@ -133,7 +129,7 @@ export class AccountService {
   }
 
   /**
-   * Recalculate Account current balance by adding all PnL of non-deleted trades to starting balance
+   * Recalculate Account current balance using SQL aggregate instead of fetching all trades.
    */
   private static async recalculateAccountBalance(tx: Prisma.TransactionClient, accountId: string) {
     const account = await tx.account.findUnique({
@@ -141,12 +137,12 @@ export class AccountService {
     });
     if (!account) return;
 
-    const trades = await tx.trade.findMany({
+    const result = await tx.trade.aggregate({
       where: { accountId, deletedAt: null },
-      select: { pnl: true },
+      _sum: { pnl: true },
     });
 
-    const totalPnl = trades.reduce((sum, trade) => sum + (trade.pnl ? Number(trade.pnl) : 0), 0);
+    const totalPnl = Number(result._sum.pnl ?? 0);
     const newBalance = Number(account.startingBalance) + totalPnl;
 
     await tx.account.update({
@@ -182,17 +178,118 @@ export class AccountService {
 
   /**
    * Get full performance metrics and drawdown calculations for a selected account.
+   * OPTIMIZED: Uses SQL aggregates + groupBy instead of fetching all trades into memory.
    */
   static async getAccountMetrics(userId: string, accountId: string) {
-    const account = await prisma.account.findFirst({
-      where: { id: accountId, userId },
-      include: {
-        trades: {
-          where: { deletedAt: null },
-          orderBy: { date: "asc" },
-        },
+    return this._getAccountMetricsCached(userId, accountId);
+  }
+
+  /**
+   * Cached version of account metrics. Revalidates every 60 seconds,
+   * or immediately when trades are created/updated/deleted via revalidateTag.
+   */
+  private static _getAccountMetricsCached = (userId: string, accountId: string) => {
+    const fn = unstable_cache(
+      async () => {
+        return AccountService._computeAccountMetrics(userId, accountId);
       },
-    });
+      [`account-metrics-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    return fn();
+  };
+
+  /**
+   * Core metrics computation using SQL aggregates.
+   */
+  private static async _computeAccountMetrics(userId: string, accountId: string) {
+    // Date boundaries for drawdown calculations
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const today = new Date();
+    const dayOfWeek = today.getUTCDay(); // 0 is Sunday
+    const weekStart = new Date(today);
+    weekStart.setUTCDate(today.getUTCDate() - dayOfWeek);
+    weekStart.setUTCHours(0, 0, 0, 0);
+
+    const baseWhere = { accountId, deletedAt: null as null };
+
+    // Run all queries in parallel — this is the critical optimization
+    const [
+      account,
+      totalAgg,
+      profitAgg,
+      lossAgg,
+      winCount,
+      lossCount,
+      breakevenCount,
+      rrAgg,
+      sessionGrouped,
+      tradesToday,
+      tradesThisWeek,
+    ] = await Promise.all([
+      // 1. Account info (lightweight, no trades)
+      prisma.account.findFirst({ where: { id: accountId, userId } }),
+
+      // 2. Total aggregate: count, sum(pnl), max(pnl), min(pnl)
+      prisma.trade.aggregate({
+        where: baseWhere,
+        _count: { _all: true },
+        _sum: { pnl: true },
+      }),
+
+      // 3. Sum of profitable trades only
+      prisma.trade.aggregate({
+        where: { ...baseWhere, pnl: { gt: 0 } },
+        _sum: { pnl: true },
+        _max: { pnl: true },
+      }),
+
+      // 4. Sum of losing trades only
+      prisma.trade.aggregate({
+        where: { ...baseWhere, pnl: { lt: 0 } },
+        _sum: { pnl: true },
+        _min: { pnl: true },
+      }),
+
+      // 5. Win count
+      prisma.trade.count({ where: { ...baseWhere, result: "WIN" } }),
+
+      // 6. Loss count
+      prisma.trade.count({ where: { ...baseWhere, result: "LOSS" } }),
+
+      // 7. Breakeven count
+      prisma.trade.count({ where: { ...baseWhere, result: "BREAKEVEN" } }),
+
+      // 8. Average RR
+      prisma.trade.aggregate({
+        where: { ...baseWhere, rrAchieved: { not: null } },
+        _avg: { rrAchieved: true },
+      }),
+
+      // 9. Session stats via groupBy
+      prisma.trade.groupBy({
+        by: ["session", "result"],
+        where: baseWhere,
+        _count: { _all: true },
+        _sum: { pnl: true },
+      }),
+
+      // 10. Today's trades for daily drawdown (typically 0–5 rows)
+      prisma.trade.findMany({
+        where: { ...baseWhere, date: { gte: todayStart } },
+        select: { pnl: true, date: true },
+        orderBy: { date: "asc" },
+      }),
+
+      // 11. This week's trades for weekly drawdown (typically 0–25 rows)
+      prisma.trade.findMany({
+        where: { ...baseWhere, date: { gte: weekStart } },
+        select: { pnl: true, date: true },
+        orderBy: { date: "asc" },
+      }),
+    ]);
 
     if (!account) {
       throw new Error("Account not found");
@@ -203,68 +300,39 @@ export class AccountService {
     const netProfit = currentBalance - startingBalance;
     const growthPercent = startingBalance > 0 ? (netProfit / startingBalance) * 100 : 0;
 
-    const trades = account.trades;
-    const totalTrades = trades.length;
+    const totalTrades = totalAgg._count._all;
+    const totalProfit = Number(profitAgg._sum.pnl ?? 0);
+    const totalLoss = Number(lossAgg._sum.pnl ?? 0);
+    const bestTrade = Number(profitAgg._max.pnl ?? 0);
+    const worstTrade = Number(lossAgg._min.pnl ?? 0);
+    const averageRR = Number(rrAgg._avg.rrAchieved ?? 0);
 
-    let totalProfit = 0;
-    let totalLoss = 0;
-    let wins = 0;
-    let losses = 0;
-    let breakevens = 0;
-    let bestTrade = 0;
-    let worstTrade = 0;
-    const rrList: number[] = [];
+    const winRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
+    const lossRate = totalTrades > 0 ? (lossCount / totalTrades) * 100 : 0;
+    const profitFactor = Math.abs(totalLoss) > 0
+      ? totalProfit / Math.abs(totalLoss)
+      : totalProfit > 0 ? Infinity : 0;
 
-    // Session-specific stats helper
+    // Build session stats from groupBy results
     const sessionStats: Record<string, { trades: number; wins: number; pnl: number }> = {
       LONDON: { trades: 0, wins: 0, pnl: 0 },
       NEW_YORK: { trades: 0, wins: 0, pnl: 0 },
       ASIAN: { trades: 0, wins: 0, pnl: 0 },
     };
 
-    trades.forEach((t) => {
-      const pnl = t.pnl ? Number(t.pnl) : 0;
-      if (pnl > 0) {
-        totalProfit += pnl;
-        wins++;
-        if (pnl > bestTrade) bestTrade = pnl;
-      } else if (pnl < 0) {
-        totalLoss += pnl;
-        losses++;
-        if (pnl < worstTrade) worstTrade = pnl;
-      } else {
-        breakevens++;
-      }
-
-      if (t.rrAchieved !== null) {
-        rrList.push(Number(t.rrAchieved));
-      }
-
-      // Update session statistics
-      const sess = t.session;
+    for (const row of sessionGrouped) {
+      const sess = row.session;
       if (sessionStats[sess]) {
-        sessionStats[sess].trades++;
-        sessionStats[sess].pnl += pnl;
-        if (pnl > 0) {
-          sessionStats[sess].wins++;
+        sessionStats[sess].trades += row._count._all;
+        sessionStats[sess].pnl += Number(row._sum.pnl ?? 0);
+        if (row.result === "WIN") {
+          sessionStats[sess].wins += row._count._all;
         }
       }
-    });
+    }
 
-    const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
-    const lossRate = totalTrades > 0 ? (losses / totalTrades) * 100 : 0;
-    const profitFactor = Math.abs(totalLoss) > 0 ? totalProfit / Math.abs(totalLoss) : totalProfit > 0 ? Infinity : 0;
-    const averageRR = rrList.length > 0 ? rrList.reduce((s, r) => s + r, 0) / rrList.length : 0;
-
-    // Drawdowns Tracking
-    // 1. Daily Drawdown (from start of today)
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
-
-    const tradesToday = trades.filter((t) => new Date(t.date) >= todayStart);
+    // Daily Drawdown — simulate balance trajectory with today's (small) trade set
     let dailyStartBalance = currentBalance - tradesToday.reduce((sum, t) => sum + (t.pnl ? Number(t.pnl) : 0), 0);
-    
-    // Simulate balance trajectory today to find the lowest dip
     let lowestBalanceToday = dailyStartBalance;
     let runningBalanceToday = dailyStartBalance;
     tradesToday.forEach((t) => {
@@ -276,16 +344,8 @@ export class AccountService {
     const dailyDrawdownAmt = Math.max(0, dailyStartBalance - lowestBalanceToday);
     const dailyDrawdownPercent = dailyStartBalance > 0 ? (dailyDrawdownAmt / dailyStartBalance) * 100 : 0;
 
-    // 2. Weekly Drawdown (from start of current week)
-    const today = new Date();
-    const dayOfWeek = today.getUTCDay(); // 0 is Sunday
-    const weekStart = new Date(today);
-    weekStart.setUTCDate(today.getUTCDate() - dayOfWeek);
-    weekStart.setUTCHours(0, 0, 0, 0);
-
-    const tradesThisWeek = trades.filter((t) => new Date(t.date) >= weekStart);
+    // Weekly Drawdown
     let weeklyStartBalance = currentBalance - tradesThisWeek.reduce((sum, t) => sum + (t.pnl ? Number(t.pnl) : 0), 0);
-
     let lowestBalanceWeekly = weeklyStartBalance;
     let runningBalanceWeekly = weeklyStartBalance;
     tradesThisWeek.forEach((t) => {
@@ -297,12 +357,11 @@ export class AccountService {
     const weeklyDrawdownAmt = Math.max(0, weeklyStartBalance - lowestBalanceWeekly);
     const weeklyDrawdownPercent = weeklyStartBalance > 0 ? (weeklyDrawdownAmt / weeklyStartBalance) * 100 : 0;
 
-    // 3. Overall Drawdown (from peak equity historically or from starting balance)
-    // Prop firms often compute overall drawdown relative to initial starting balance
+    // Overall Drawdown (from starting balance)
     const overallDrawdownAmt = Math.max(0, startingBalance - currentBalance);
     const overallDrawdownPercent = startingBalance > 0 ? (overallDrawdownAmt / startingBalance) * 100 : 0;
 
-    // Best / Worst Session calculations
+    // Best / Worst Session
     let bestSessionName = "N/A";
     let worstSessionName = "N/A";
     let bestSessionPnl = -Infinity;

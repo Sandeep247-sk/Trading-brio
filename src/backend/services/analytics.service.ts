@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 export interface EquityPoint {
   date: string;
@@ -50,8 +51,18 @@ export class AnalyticsService {
   /**
    * Generate equity curve data points for the selected account.
    * Each point represents the cumulative balance after each trade (chronologically).
+   * Cached for 60 seconds with immediate invalidation on trade changes.
    */
   static async getEquityCurve(userId: string, accountId: string): Promise<EquityPoint[]> {
+    const fn = unstable_cache(
+      async () => AnalyticsService._computeEquityCurve(userId, accountId),
+      [`equity-curve-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    return fn();
+  }
+
+  private static async _computeEquityCurve(userId: string, accountId: string): Promise<EquityPoint[]> {
     const account = await prisma.account.findFirst({
       where: { id: accountId, userId },
     });
@@ -61,6 +72,7 @@ export class AnalyticsService {
       where: { accountId, deletedAt: null },
       orderBy: { date: "asc" },
       select: { date: true, pnl: true },
+      take: 300,
     });
 
     const startingBalance = Number(account.startingBalance);
@@ -85,8 +97,18 @@ export class AnalyticsService {
 
   /**
    * Aggregate monthly P&L data.
+   * Cached for 60 seconds.
    */
   static async getMonthlyPnl(userId: string, accountId: string): Promise<MonthlyPnl[]> {
+    const fn = unstable_cache(
+      async () => AnalyticsService._computeMonthlyPnl(userId, accountId),
+      [`monthly-pnl-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    return fn();
+  }
+
+  private static async _computeMonthlyPnl(userId: string, accountId: string): Promise<MonthlyPnl[]> {
     const trades = await prisma.trade.findMany({
       where: { accountId, deletedAt: null, account: { userId } },
       orderBy: { date: "asc" },
@@ -118,27 +140,57 @@ export class AnalyticsService {
 
   /**
    * Get performance statistics grouped by trading pair.
+   * OPTIMIZED: Uses Prisma groupBy for counts and sums, only fetches individual rows for avgRR.
+   * Cached for 60 seconds.
    */
   static async getPairPerformance(userId: string, accountId: string): Promise<PairPerformance[]> {
-    const trades = await prisma.trade.findMany({
-      where: { accountId, deletedAt: null, account: { userId } },
-      select: { pair: true, pnl: true, result: true, rrAchieved: true },
-    });
+    const fn = unstable_cache(
+      async () => AnalyticsService._computePairPerformance(userId, accountId),
+      [`pair-performance-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    return fn();
+  }
 
-    const pairMap = new Map<string, { trades: number; wins: number; losses: number; totalPnl: number; rrList: number[] }>();
+  private static async _computePairPerformance(userId: string, accountId: string): Promise<PairPerformance[]> {
+    const baseWhere = { accountId, deletedAt: null as null, account: { userId } };
 
-    trades.forEach((t) => {
-      if (!pairMap.has(t.pair)) {
-        pairMap.set(t.pair, { trades: 0, wins: 0, losses: 0, totalPnl: 0, rrList: [] });
+    // Use groupBy for counts and sums — avoids fetching all trade rows
+    const [pairGrouped, pairRR] = await Promise.all([
+      prisma.trade.groupBy({
+        by: ["pair", "result"],
+        where: baseWhere,
+        _count: { _all: true },
+        _sum: { pnl: true },
+      }),
+      prisma.trade.groupBy({
+        by: ["pair"],
+        where: { ...baseWhere, rrAchieved: { not: null } },
+        _avg: { rrAchieved: true },
+      }),
+    ]);
+
+    // Build pair map from groupBy results
+    const pairMap = new Map<string, { trades: number; wins: number; losses: number; totalPnl: number; avgRR: number }>();
+
+    for (const row of pairGrouped) {
+      if (!pairMap.has(row.pair)) {
+        pairMap.set(row.pair, { trades: 0, wins: 0, losses: 0, totalPnl: 0, avgRR: 0 });
       }
-      const entry = pairMap.get(t.pair)!;
-      entry.trades++;
-      const pnl = t.pnl ? Number(t.pnl) : 0;
-      entry.totalPnl += pnl;
-      if (t.result === "WIN") entry.wins++;
-      else if (t.result === "LOSS") entry.losses++;
-      if (t.rrAchieved !== null) entry.rrList.push(Number(t.rrAchieved));
-    });
+      const entry = pairMap.get(row.pair)!;
+      entry.trades += row._count._all;
+      entry.totalPnl += Number(row._sum.pnl ?? 0);
+      if (row.result === "WIN") entry.wins += row._count._all;
+      else if (row.result === "LOSS") entry.losses += row._count._all;
+    }
+
+    // Add avgRR from the separate groupBy
+    for (const row of pairRR) {
+      const entry = pairMap.get(row.pair);
+      if (entry) {
+        entry.avgRR = Number(row._avg.rrAchieved ?? 0);
+      }
+    }
 
     return Array.from(pairMap.entries())
       .map(([pair, data]) => ({
@@ -148,35 +200,52 @@ export class AnalyticsService {
         losses: data.losses,
         winRate: data.trades > 0 ? (data.wins / data.trades) * 100 : 0,
         netPnl: data.totalPnl,
-        avgRR: data.rrList.length > 0 ? data.rrList.reduce((s, r) => s + r, 0) / data.rrList.length : 0,
+        avgRR: data.avgRR,
       }))
       .sort((a, b) => b.trades - a.trades);
   }
 
   /**
    * Get session distribution data.
+   * OPTIMIZED: Uses Prisma groupBy instead of fetching all trades.
+   * Cached for 60 seconds.
    */
   static async getSessionDistribution(userId: string, accountId: string): Promise<SessionDistribution[]> {
-    const trades = await prisma.trade.findMany({
-      where: { accountId, deletedAt: null, account: { userId } },
-      select: { session: true, pnl: true, result: true },
-    });
+    const fn = unstable_cache(
+      async () => AnalyticsService._computeSessionDistribution(userId, accountId),
+      [`session-distribution-${accountId}`],
+      { revalidate: 60, tags: [`account-${accountId}`] }
+    );
+    return fn();
+  }
 
-    const totalTrades = trades.length;
+  private static async _computeSessionDistribution(userId: string, accountId: string): Promise<SessionDistribution[]> {
+    const baseWhere = { accountId, deletedAt: null as null, account: { userId } };
+
+    const [sessionGrouped, totalCount] = await Promise.all([
+      prisma.trade.groupBy({
+        by: ["session", "result"],
+        where: baseWhere,
+        _count: { _all: true },
+        _sum: { pnl: true },
+      }),
+      prisma.trade.count({ where: baseWhere }),
+    ]);
+
     const sessionMap: Record<string, { trades: number; wins: number; pnl: number }> = {
       LONDON: { trades: 0, wins: 0, pnl: 0 },
       NEW_YORK: { trades: 0, wins: 0, pnl: 0 },
       ASIAN: { trades: 0, wins: 0, pnl: 0 },
     };
 
-    trades.forEach((t) => {
-      const sess = sessionMap[t.session];
+    for (const row of sessionGrouped) {
+      const sess = sessionMap[row.session];
       if (sess) {
-        sess.trades++;
-        sess.pnl += t.pnl ? Number(t.pnl) : 0;
-        if (t.result === "WIN") sess.wins++;
+        sess.trades += row._count._all;
+        sess.pnl += Number(row._sum.pnl ?? 0);
+        if (row.result === "WIN") sess.wins += row._count._all;
       }
-    });
+    }
 
     return Object.entries(sessionMap).map(([session, data]) => ({
       session: session.replace(/_/g, " "),
@@ -184,7 +253,7 @@ export class AnalyticsService {
       wins: data.wins,
       winRate: data.trades > 0 ? (data.wins / data.trades) * 100 : 0,
       pnl: data.pnl,
-      percentage: totalTrades > 0 ? (data.trades / totalTrades) * 100 : 0,
+      percentage: totalCount > 0 ? (data.trades / totalCount) * 100 : 0,
     }));
   }
 

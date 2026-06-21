@@ -1,19 +1,25 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 const BUCKET = "trade-screenshots";
 
 export class SupabaseStorageProvider {
+  private supabaseClient: SupabaseClient | null = null;
+
+  private get supabase(): SupabaseClient {
+    if (!this.supabaseClient) {
+      this.supabaseClient = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+    }
+    return this.supabaseClient;
+  }
   async uploadFile(
     file: Buffer,
     key: string,
     mimeType: string
   ) {
-    const { error } = await supabase.storage
+    const { error } = await this.supabase.storage
       .from(BUCKET)
       .upload(key, file, {
         contentType: mimeType,
@@ -29,7 +35,7 @@ export class SupabaseStorageProvider {
   }
 
   async deleteFile(key: string) {
-    const { error } = await supabase.storage
+    const { error } = await this.supabase.storage
       .from(BUCKET)
       .remove([key]);
 
@@ -37,7 +43,7 @@ export class SupabaseStorageProvider {
   }
 
   async getPublicUrl(key: string) {
-    const { data } = supabase.storage
+    const { data } = this.supabase.storage
       .from(BUCKET)
       .getPublicUrl(key);
 
