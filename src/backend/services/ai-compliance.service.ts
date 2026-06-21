@@ -13,6 +13,7 @@ export class AIComplianceService {
    * Runs AI analysis on a trade against its account risk limits and strategy rules.
    */
   static async analyzeTrade(userId: string, tradeId: string): Promise<any> {
+    console.log("GEMINI KEY EXISTS:", !!process.env.GEMINI_API_KEY);
     if (!genAI) {
       console.warn("GEMINI_API_KEY is not configured. Skipping trade analysis.");
       return null;
