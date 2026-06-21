@@ -213,7 +213,27 @@ export class TradeService {
       }
     }
 
-    const tradePnl = input.pnl !== undefined ? input.pnl : null;
+    let tradePnl = input.pnl !== undefined ? input.pnl : null;
+    const resolvedResult = input.result || null;
+    
+    // Normalize signs
+    if (resolvedResult) {
+      if (resolvedResult === "LOSS") {
+        if (tradePnl !== null && tradePnl > 0) {
+          tradePnl = -tradePnl;
+        }
+        if (rrAchieved !== null && rrAchieved > 0) {
+          rrAchieved = -rrAchieved;
+        }
+      } else if (resolvedResult === "WIN") {
+        if (tradePnl !== null && tradePnl < 0) {
+          tradePnl = Math.abs(tradePnl);
+        }
+        if (rrAchieved !== null && rrAchieved < 0) {
+          rrAchieved = Math.abs(rrAchieved);
+        }
+      }
+    }
 
     const trade = await prisma.$transaction(async (tx) => {
       const newTrade = await tx.trade.create({
@@ -273,6 +293,48 @@ export class TradeService {
   static async updateTrade(userId: string, tradeId: string, input: UpdateTradeInput) {
     const existingTrade = await this.getTradeById(userId, tradeId);
 
+    const finalResult = input.result !== undefined ? input.result : existingTrade.result;
+    
+    let finalPnl = input.pnl !== undefined 
+      ? (input.pnl !== null ? Number(input.pnl) : null) 
+      : (existingTrade.pnl ? Number(existingTrade.pnl) : null);
+      
+    let finalRr = input.rrAchieved !== undefined 
+      ? (input.rrAchieved !== null ? Number(input.rrAchieved) : null) 
+      : (existingTrade.rrAchieved ? Number(existingTrade.rrAchieved) : null);
+
+    // Normalize signs
+    if (finalResult) {
+      if (finalResult === "LOSS") {
+        if (finalPnl !== null && finalPnl > 0) {
+          finalPnl = -finalPnl;
+        }
+        if (finalRr !== null && finalRr > 0) {
+          finalRr = -finalRr;
+        }
+      } else if (finalResult === "WIN") {
+        if (finalPnl !== null && finalPnl < 0) {
+          finalPnl = Math.abs(finalPnl);
+        }
+        if (finalRr !== null && finalRr < 0) {
+          finalRr = Math.abs(finalRr);
+        }
+      }
+    }
+
+    // Assign normalized values back to input or overwrite if result changed but field was omitted
+    if (input.pnl !== undefined) {
+      input.pnl = finalPnl;
+    } else if (existingTrade.pnl && Number(existingTrade.pnl) !== finalPnl) {
+      input.pnl = finalPnl;
+    }
+
+    if (input.rrAchieved !== undefined) {
+      input.rrAchieved = finalRr;
+    } else if (existingTrade.rrAchieved && Number(existingTrade.rrAchieved) !== finalRr) {
+      input.rrAchieved = finalRr;
+    }
+
     const oldPnl = existingTrade.pnl ? Number(existingTrade.pnl) : 0;
     const newPnl = input.pnl !== undefined ? (input.pnl !== null ? Number(input.pnl) : 0) : oldPnl;
     const diffPnl = newPnl - oldPnl;
@@ -325,7 +387,6 @@ export class TradeService {
 
     // Invalidate cached metrics for this account
     revalidateTag(`account-${existingTrade.accountId}`, "max");
-
 
     return trade;
   }
