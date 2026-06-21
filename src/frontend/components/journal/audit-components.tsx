@@ -16,34 +16,23 @@ export function ScoreCard({ title, score, colorClass }: ScoreCardProps) {
   const getBarColor = () => {
     switch (colorClass) {
       case "green":
-        return "bg-emerald-500 shadow-emerald-500/20";
+        return "bg-emerald-500";
       case "blue":
-        return "bg-blue-500 shadow-blue-500/20";
+        return "bg-blue-500";
       case "purple":
-        return "bg-purple-500 shadow-purple-500/20";
-    }
-  };
-
-  const getBgColor = () => {
-    switch (colorClass) {
-      case "green":
-        return "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
-      case "blue":
-        return "bg-blue-500/10 border-blue-500/20 text-blue-400";
-      case "purple":
-        return "bg-purple-500/10 border-purple-500/20 text-purple-400";
+        return "bg-purple-500";
     }
   };
 
   return (
-    <div className={`p-5 rounded-xl border ${getBgColor()} backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5`}>
+    <div className="p-5 rounded-xl border border-gray-850 bg-card/80 backdrop-blur-sm card-hover">
       <div className="flex justify-between items-center mb-3">
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{title}</span>
-        <span className="text-2xl font-black font-mono">{score}%</span>
+        <span className="text-2xl font-bold text-white font-mono">{score}%</span>
       </div>
-      <div className="h-2 w-full bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+      <div className="h-2 w-full bg-gray-950 rounded-full overflow-hidden border border-gray-900">
         <div 
-          className={`h-full rounded-full transition-all duration-1000 ease-out shadow-lg ${getBarColor()}`}
+          className={`h-full rounded-full transition-all duration-1000 ease-out ${getBarColor()}`}
           style={{ width: `${score}%` }}
         />
       </div>

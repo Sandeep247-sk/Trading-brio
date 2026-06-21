@@ -172,15 +172,15 @@
 
 /* Glow effects */
 .glow-blue {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  box-shadow: none;
 }
 
 .glow-green {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+  box-shadow: none;
 }
 
 .glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+  box-shadow: none;
 }
 
 /* Smooth card hover */

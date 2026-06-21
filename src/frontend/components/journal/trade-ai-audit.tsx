@@ -136,28 +136,28 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
       case "A_PLUS":
       case "A":
         return {
-          bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-emerald-500/5",
+          bg: "bg-card/80 border-gray-850 text-white",
           badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-          glow: "shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+          glow: ""
         };
       case "B":
         return {
-          bg: "bg-blue-500/10 border-blue-500/30 text-blue-400 shadow-blue-500/5",
+          bg: "bg-card/80 border-gray-850 text-white",
           badge: "bg-blue-500/20 text-blue-300 border-blue-500/40",
-          glow: "shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+          glow: ""
         };
       case "C":
         return {
-          bg: "bg-amber-500/10 border-amber-500/30 text-amber-400 shadow-amber-500/5",
+          bg: "bg-card/80 border-gray-850 text-white",
           badge: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-          glow: "shadow-[0_0_15px_rgba(245,158,11,0.1)]"
+          glow: ""
         };
       case "D":
       default:
         return {
-          bg: "bg-red-500/10 border-red-500/30 text-red-400 shadow-red-500/5",
+          bg: "bg-card/80 border-gray-850 text-white",
           badge: "bg-red-500/20 text-red-300 border-red-500/40",
-          glow: "shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+          glow: ""
         };
     }
   };
@@ -239,7 +239,7 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
           {/* KPI Dashboard Top Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Grade KPI Card */}
-            <div className={`p-5 rounded-xl border backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 flex flex-col justify-between ${gradeColors?.bg} ${gradeColors?.glow}`}>
+            <div className={`p-5 rounded-xl border backdrop-blur-sm card-hover flex flex-col justify-between ${gradeColors?.bg || "border-gray-850 bg-card/80 text-white"}`}>
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">Performance Grade</span>
                 <span className={`px-2 py-0.5 rounded text-[8px] font-black tracking-widest uppercase border ${gradeColors?.badge}`}>

@@ -26,8 +26,8 @@ export function StatCard({
 }: StatCardProps) {
   const variantStyles = {
     default: "border-border",
-    success: "border-emerald-500/20 glow-green",
-    danger: "border-red-500/20 glow-red",
+    success: "border-emerald-500/20",
+    danger: "border-red-500/20",
     warning: "border-amber-500/20",
   };
 
