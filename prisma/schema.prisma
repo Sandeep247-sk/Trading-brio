@@ -47,26 +47,36 @@ model UserSession {
 }
 
 model Account {
-  id                 String          @id @default(uuid())
+  id                 String           @id @default(uuid())
   userId             String
   name               String
   brokerName         String?
-  accountType        AccountType     @default(LIVE)
-  platform           TradingPlatform @default(OTHER)
+  accountType        AccountType      @default(LIVE)
+  platform           TradingPlatform  @default(OTHER)
   accountNumber      String?
-  startingBalance    Decimal         @db.Decimal(18, 2)
-  currentBalance     Decimal         @db.Decimal(18, 2)
-  currency           String          @default("USD")
-  isDefault          Boolean         @default(false)
-  maxRiskPerTrade    Decimal?        @db.Decimal(5, 2)
-  maxDailyDrawdown   Decimal?        @db.Decimal(5, 2)
-  maxWeeklyDrawdown  Decimal?        @db.Decimal(5, 2)
-  maxOverallDrawdown Decimal?        @db.Decimal(5, 2)
+  startingBalance    Decimal          @db.Decimal(18, 2)
+  currentBalance     Decimal          @db.Decimal(18, 2)
+  currency           String           @default("USD")
+  isDefault          Boolean          @default(false)
+  maxRiskPerTrade    Decimal?         @db.Decimal(5, 2)
+  maxDailyDrawdown   Decimal?         @db.Decimal(5, 2)
+  maxOverallDrawdown Decimal?         @db.Decimal(5, 2)
   maxTradesPerDay    Int?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Prop challenge and funded fields:
+  challengeName      String?
+  phasesCount        Int?
+  fundedSince        DateTime?
+  profitSplit        Decimal?         @db.Decimal(5, 2)
+  challengeStatus    String?          @default("ACTIVE") // ACTIVE, PHASE_COMPLETED, READY_FOR_NEXT_PHASE, CHALLENGE_PASSED, FUNDED, FAILED
+  isCompleted        Boolean          @default(false)
+  completedAt        DateTime?
+
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   trades             Trade[]
+  phases             ChallengePhase[]
 
   @@index([userId])
   @@index([userId, isDefault])
@@ -388,4 +398,37 @@ enum AuditAction {
   LOGOUT
   EXPORT
   ANALYZE
+}
+
+model ChallengePhase {
+  id                 String            @id @default(uuid())
+  accountId          String
+  phaseNumber        Int
+  phaseName          String
+  profitTarget       Decimal           @db.Decimal(5, 2)
+  dailyDrawdownLimit Decimal           @db.Decimal(5, 2)
+  maxDrawdownLimit   Decimal           @db.Decimal(5, 2)
+  completed          Boolean           @default(false)
+  completedAt        DateTime?
+  celebrated         Boolean           @default(false)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  account            Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  completions        PhaseCompletion[]
+
+  @@index([accountId])
+  @@map("challenge_phases")
+}
+
+model PhaseCompletion {
+  id              String         @id @default(uuid())
+  phaseId         String
+  completedAt     DateTime       @default(now())
+  startingBalance Decimal        @db.Decimal(18, 2)
+  endingBalance   Decimal        @db.Decimal(18, 2)
+  profitAchieved  Decimal        @db.Decimal(18, 2)
+  challengePhase  ChallengePhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+
+  @@index([phaseId])
+  @@map("phase_completions")
 }

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { CreateAccountInput, UpdateAccountInput } from "@/lib/validations/account";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 
 const accountMetricsCacheMap = new Map<string, ReturnType<typeof unstable_cache>>();
 
@@ -28,16 +28,25 @@ export class AccountService {
     return prisma.account.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      include: {
+        phases: {
+          orderBy: { phaseNumber: "asc" },
+        },
+      },
     });
   }
   
   /**
    * Get specific account details.
-   * NOTE: No longer includes all trades — use getAccountMetrics() for metrics.
    */
   static async getAccountById(userId: string, accountId: string) {
     const account = await prisma.account.findFirst({
       where: { id: accountId, userId },
+      include: {
+        phases: {
+          orderBy: { phaseNumber: "asc" },
+        },
+      },
     });
 
     if (!account) {
@@ -78,11 +87,31 @@ export class AccountService {
           isDefault,
           maxRiskPerTrade: input.maxRiskPerTrade ? new Prisma.Decimal(input.maxRiskPerTrade) : null,
           maxDailyDrawdown: input.maxDailyDrawdown ? new Prisma.Decimal(input.maxDailyDrawdown) : null,
-          maxWeeklyDrawdown: input.maxWeeklyDrawdown ? new Prisma.Decimal(input.maxWeeklyDrawdown) : null,
           maxOverallDrawdown: input.maxOverallDrawdown ? new Prisma.Decimal(input.maxOverallDrawdown) : null,
           maxTradesPerDay: input.maxTradesPerDay,
+          challengeName: input.challengeName || null,
+          phasesCount: input.phasesCount || null,
+          fundedSince: input.fundedSince ? new Date(input.fundedSince) : null,
+          profitSplit: input.profitSplit ? new Prisma.Decimal(input.profitSplit) : null,
+          challengeStatus: input.challengeStatus || "ACTIVE",
+          isCompleted: false,
         },
       });
+
+      if (input.accountType === "PROP_CHALLENGE" && input.phases && input.phases.length > 0) {
+        await tx.challengePhase.createMany({
+          data: input.phases.map((p) => ({
+            accountId: account.id,
+            phaseNumber: p.phaseNumber,
+            phaseName: p.phaseName,
+            profitTarget: new Prisma.Decimal(p.profitTarget),
+            dailyDrawdownLimit: new Prisma.Decimal(p.dailyDrawdownLimit),
+            maxDrawdownLimit: new Prisma.Decimal(p.maxDrawdownLimit),
+            completed: false,
+            celebrated: false,
+          })),
+        });
+      }
 
       return account;
     });
@@ -92,7 +121,7 @@ export class AccountService {
    * Update an existing account configuration.
    */
   static async updateAccount(userId: string, accountId: string, input: UpdateAccountInput) {
-    // Check ownership (lightweight — no trade include)
+    // Check ownership
     await this.getAccountById(userId, accountId);
 
     return prisma.$transaction(async (tx) => {
@@ -123,9 +152,6 @@ export class AccountService {
       if (input.maxDailyDrawdown !== undefined) {
         updateData.maxDailyDrawdown = input.maxDailyDrawdown ? new Prisma.Decimal(input.maxDailyDrawdown) : null;
       }
-      if (input.maxWeeklyDrawdown !== undefined) {
-        updateData.maxWeeklyDrawdown = input.maxWeeklyDrawdown ? new Prisma.Decimal(input.maxWeeklyDrawdown) : null;
-      }
       if (input.maxOverallDrawdown !== undefined) {
         updateData.maxOverallDrawdown = input.maxOverallDrawdown ? new Prisma.Decimal(input.maxOverallDrawdown) : null;
       }
@@ -133,13 +159,44 @@ export class AccountService {
         updateData.maxTradesPerDay = input.maxTradesPerDay;
       }
 
+      // Challenge fields
+      if (input.challengeName !== undefined) updateData.challengeName = input.challengeName;
+      if (input.phasesCount !== undefined) updateData.phasesCount = input.phasesCount;
+      if (input.fundedSince !== undefined) updateData.fundedSince = input.fundedSince ? new Date(input.fundedSince) : null;
+      if (input.profitSplit !== undefined) updateData.profitSplit = input.profitSplit ? new Prisma.Decimal(input.profitSplit) : null;
+      if (input.challengeStatus !== undefined) updateData.challengeStatus = input.challengeStatus;
+
       const account = await tx.account.update({
         where: { id: accountId },
         data: updateData,
       });
 
+      // Update phases if specified
+      if (input.accountType === "PROP_CHALLENGE" && input.phases) {
+        // Delete old phases
+        await tx.challengePhase.deleteMany({
+          where: { accountId },
+        });
+        // Create new phases
+        await tx.challengePhase.createMany({
+          data: input.phases.map((p) => ({
+            accountId: accountId,
+            phaseNumber: p.phaseNumber,
+            phaseName: p.phaseName,
+            profitTarget: new Prisma.Decimal(p.profitTarget),
+            dailyDrawdownLimit: new Prisma.Decimal(p.dailyDrawdownLimit),
+            maxDrawdownLimit: new Prisma.Decimal(p.maxDrawdownLimit),
+            completed: false,
+            celebrated: false,
+          })),
+        });
+      }
+
       // Recalculate balance from trades
       await this.recalculateAccountBalance(tx, accountId);
+
+      // Evaluate rules
+      await this.evaluateChallengeRules(tx, accountId);
 
       return account;
     });
@@ -195,7 +252,6 @@ export class AccountService {
 
   /**
    * Get full performance metrics and drawdown calculations for a selected account.
-   * OPTIMIZED: Uses SQL aggregates + groupBy instead of fetching all trades into memory.
    */
   static async getAccountMetrics(userId: string, accountId: string) {
     return getAccountMetricsCached(userId, accountId);
@@ -205,19 +261,12 @@ export class AccountService {
    * Core metrics computation using SQL aggregates.
    */
   public static async _computeAccountMetrics(userId: string, accountId: string) {
-    // Date boundaries for drawdown calculations
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);
 
-    const today = new Date();
-    const dayOfWeek = today.getUTCDay(); // 0 is Sunday
-    const weekStart = new Date(today);
-    weekStart.setUTCDate(today.getUTCDate() - dayOfWeek);
-    weekStart.setUTCHours(0, 0, 0, 0);
-
     const baseWhere = { accountId, deletedAt: null as null };
 
-    // Run all queries in parallel — this is the critical optimization
+    // Run queries in parallel
     const [
       account,
       totalAgg,
@@ -229,65 +278,45 @@ export class AccountService {
       rrAgg,
       sessionGrouped,
       tradesToday,
-      tradesThisWeek,
     ] = await Promise.all([
-      // 1. Account info (lightweight, no trades)
-      prisma.account.findFirst({ where: { id: accountId, userId } }),
-
-      // 2. Total aggregate: count, sum(pnl), max(pnl), min(pnl)
+      prisma.account.findFirst({
+        where: { id: accountId, userId },
+        include: {
+          phases: {
+            orderBy: { phaseNumber: "asc" },
+          },
+        },
+      }),
       prisma.trade.aggregate({
         where: baseWhere,
         _count: { _all: true },
         _sum: { pnl: true },
       }),
-
-      // 3. Sum of profitable trades only
       prisma.trade.aggregate({
         where: { ...baseWhere, pnl: { gt: 0 } },
         _sum: { pnl: true },
         _max: { pnl: true },
       }),
-
-      // 4. Sum of losing trades only
       prisma.trade.aggregate({
         where: { ...baseWhere, pnl: { lt: 0 } },
         _sum: { pnl: true },
         _min: { pnl: true },
       }),
-
-      // 5. Win count
       prisma.trade.count({ where: { ...baseWhere, result: "WIN" } }),
-
-      // 6. Loss count
       prisma.trade.count({ where: { ...baseWhere, result: "LOSS" } }),
-
-      // 7. Breakeven count
       prisma.trade.count({ where: { ...baseWhere, result: "BREAKEVEN" } }),
-
-      // 8. Average RR
       prisma.trade.aggregate({
         where: { ...baseWhere, rrAchieved: { not: null } },
         _avg: { rrAchieved: true },
       }),
-
-      // 9. Session stats via groupBy
       prisma.trade.groupBy({
         by: ["session", "result"],
         where: baseWhere,
         _count: { _all: true },
         _sum: { pnl: true },
       }),
-
-      // 10. Today's trades for daily drawdown (typically 0–5 rows)
       prisma.trade.findMany({
         where: { ...baseWhere, date: { gte: todayStart } },
-        select: { pnl: true, date: true },
-        orderBy: { date: "asc" },
-      }),
-
-      // 11. This week's trades for weekly drawdown (typically 0–25 rows)
-      prisma.trade.findMany({
-        where: { ...baseWhere, date: { gte: weekStart } },
         select: { pnl: true, date: true },
         orderBy: { date: "asc" },
       }),
@@ -315,7 +344,7 @@ export class AccountService {
       ? totalProfit / Math.abs(totalLoss)
       : totalProfit > 0 ? Infinity : 0;
 
-    // Build session stats from groupBy results
+    // Session stats
     const sessionStats: Record<string, { trades: number; wins: number; pnl: number }> = {
       LONDON: { trades: 0, wins: 0, pnl: 0 },
       NEW_YORK: { trades: 0, wins: 0, pnl: 0 },
@@ -333,7 +362,7 @@ export class AccountService {
       }
     }
 
-    // Daily Drawdown — simulate balance trajectory with today's (small) trade set
+    // Daily Drawdown
     let dailyStartBalance = currentBalance - tradesToday.reduce((sum, t) => sum + (t.pnl ? Number(t.pnl) : 0), 0);
     let lowestBalanceToday = dailyStartBalance;
     let runningBalanceToday = dailyStartBalance;
@@ -346,22 +375,32 @@ export class AccountService {
     const dailyDrawdownAmt = Math.max(0, dailyStartBalance - lowestBalanceToday);
     const dailyDrawdownPercent = dailyStartBalance > 0 ? (dailyDrawdownAmt / dailyStartBalance) * 100 : 0;
 
-    // Weekly Drawdown
-    let weeklyStartBalance = currentBalance - tradesThisWeek.reduce((sum, t) => sum + (t.pnl ? Number(t.pnl) : 0), 0);
-    let lowestBalanceWeekly = weeklyStartBalance;
-    let runningBalanceWeekly = weeklyStartBalance;
-    tradesThisWeek.forEach((t) => {
-      runningBalanceWeekly += t.pnl ? Number(t.pnl) : 0;
-      if (runningBalanceWeekly < lowestBalanceWeekly) {
-        lowestBalanceWeekly = runningBalanceWeekly;
-      }
-    });
-    const weeklyDrawdownAmt = Math.max(0, weeklyStartBalance - lowestBalanceWeekly);
-    const weeklyDrawdownPercent = weeklyStartBalance > 0 ? (weeklyDrawdownAmt / weeklyStartBalance) * 100 : 0;
-
-    // Overall Drawdown (from starting balance)
+    // Overall Drawdown
     const overallDrawdownAmt = Math.max(0, startingBalance - currentBalance);
     const overallDrawdownPercent = startingBalance > 0 ? (overallDrawdownAmt / startingBalance) * 100 : 0;
+
+    // Prop Challenge progression and target details
+    const activePhase = account.phases.find((p) => !p.completed);
+    const currentPhaseNumber = activePhase ? activePhase.phaseNumber : (account.phasesCount || 1);
+    const currentPhaseTargetPercent = activePhase ? Number(activePhase.profitTarget) : 0;
+    
+    // Remaining profit target
+    const currentProfitPercent = growthPercent;
+    const remainingTargetPercent = Math.max(0, currentPhaseTargetPercent - currentProfitPercent);
+    const progressPercent = currentPhaseTargetPercent > 0
+      ? Math.min(100, Math.max(0, (currentProfitPercent / currentPhaseTargetPercent) * 100))
+      : 0;
+
+    // Pass probability estimation formula
+    let passProbability = 50; // base probability
+    if (totalTrades >= 5) {
+      const expectancy = (winRate / 100) * averageRR - ((100 - winRate) / 100);
+      if (expectancy > 0) {
+        passProbability = Math.min(98, 50 + expectancy * 15);
+      } else {
+        passProbability = Math.max(5, 50 + expectancy * 20);
+      }
+    }
 
     // Best / Worst Session
     let bestSessionName = "N/A";
@@ -399,11 +438,34 @@ export class AccountService {
         netProfit,
         growthPercent,
         isDefault: account.isDefault,
+        challengeName: account.challengeName,
+        phasesCount: account.phasesCount,
+        fundedSince: account.fundedSince ? account.fundedSince.toISOString() : null,
+        profitSplit: account.profitSplit ? Number(account.profitSplit) : null,
+        challengeStatus: account.challengeStatus,
+        isCompleted: account.isCompleted,
+        completedAt: account.completedAt ? account.completedAt.toISOString() : null,
+        phases: account.phases.map((p) => ({
+          id: p.id,
+          phaseNumber: p.phaseNumber,
+          phaseName: p.phaseName,
+          profitTarget: Number(p.profitTarget),
+          dailyDrawdownLimit: Number(p.dailyDrawdownLimit),
+          maxDrawdownLimit: Number(p.maxDrawdownLimit),
+          completed: p.completed,
+          completedAt: p.completedAt ? p.completedAt.toISOString() : null,
+          celebrated: p.celebrated,
+        })),
+        currentPhaseNumber,
+        currentPhaseTargetPercent,
+        currentProfitPercent,
+        remainingTargetPercent,
+        progressPercent,
+        passProbability,
         limits: {
           maxRiskPerTrade: account.maxRiskPerTrade ? Number(account.maxRiskPerTrade) : null,
-          maxDailyDrawdown: account.maxDailyDrawdown ? Number(account.maxDailyDrawdown) : null,
-          maxWeeklyDrawdown: account.maxWeeklyDrawdown ? Number(account.maxWeeklyDrawdown) : null,
-          maxOverallDrawdown: account.maxOverallDrawdown ? Number(account.maxOverallDrawdown) : null,
+          maxDailyDrawdown: activePhase ? Number(activePhase.dailyDrawdownLimit) : (account.maxDailyDrawdown ? Number(account.maxDailyDrawdown) : null),
+          maxOverallDrawdown: activePhase ? Number(activePhase.maxDrawdownLimit) : (account.maxOverallDrawdown ? Number(account.maxOverallDrawdown) : null),
           maxTradesPerDay: account.maxTradesPerDay,
         },
       },
@@ -421,10 +483,8 @@ export class AccountService {
       },
       drawdown: {
         dailyDrawdownPercent,
-        weeklyDrawdownPercent,
         overallDrawdownPercent,
         dailyDrawdownAmt,
-        weeklyDrawdownAmt,
         overallDrawdownAmt,
       },
       sessionStats: {
@@ -435,5 +495,126 @@ export class AccountService {
         sessions: sessionStats,
       },
     };
+  }
+
+  /**
+   * Evaluates the challenge status, detects drawdown breaches, and checks if a phase is completed.
+   */
+  static async evaluateChallengeRules(tx: Prisma.TransactionClient, accountId: string) {
+    const account = await tx.account.findUnique({
+      where: { id: accountId },
+      include: {
+        phases: {
+          orderBy: { phaseNumber: "asc" },
+        },
+      },
+    });
+
+    if (!account) return;
+
+    if (account.accountType !== "PROP_CHALLENGE") return;
+    if (account.challengeStatus === "FAILED" || account.challengeStatus === "CHALLENGE_PASSED") return;
+
+    const startingBalance = Number(account.startingBalance);
+    const currentBalance = Number(account.currentBalance);
+    const netProfit = currentBalance - startingBalance;
+    const profitPercent = startingBalance > 0 ? (netProfit / startingBalance) * 100 : 0;
+
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const tradesToday = await tx.trade.findMany({
+      where: { accountId, deletedAt: null, date: { gte: todayStart } },
+      select: { pnl: true },
+    });
+
+    let dailyStartBalance = currentBalance - tradesToday.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+    let lowestBalanceToday = dailyStartBalance;
+    let runningBalanceToday = dailyStartBalance;
+    
+    tradesToday.forEach((t) => {
+      runningBalanceToday += Number(t.pnl || 0);
+      if (runningBalanceToday < lowestBalanceToday) {
+        lowestBalanceToday = runningBalanceToday;
+      }
+    });
+
+    const dailyDrawdownAmt = Math.max(0, dailyStartBalance - lowestBalanceToday);
+    const dailyDrawdownPercent = dailyStartBalance > 0 ? (dailyDrawdownAmt / dailyStartBalance) * 100 : 0;
+
+    const overallDrawdownAmt = Math.max(0, startingBalance - currentBalance);
+    const overallDrawdownPercent = startingBalance > 0 ? (overallDrawdownAmt / startingBalance) * 100 : 0;
+
+    const activePhase = account.phases.find((p) => !p.completed);
+
+    if (activePhase) {
+      const dailyLimit = Number(activePhase.dailyDrawdownLimit);
+      const maxLimit = Number(activePhase.maxDrawdownLimit);
+
+      // Check Drawdown Limits Failures
+      if (dailyDrawdownPercent >= dailyLimit || overallDrawdownPercent >= maxLimit) {
+        await tx.account.update({
+          where: { id: accountId },
+          data: { challengeStatus: "FAILED" },
+        });
+        return;
+      }
+
+      // Check Profit Target Completion
+      const targetPercent = Number(activePhase.profitTarget);
+      if (profitPercent >= targetPercent) {
+        await tx.challengePhase.update({
+          where: { id: activePhase.id },
+          data: {
+            completed: true,
+            completedAt: new Date(),
+            celebrated: false,
+          },
+        });
+
+        await tx.phaseCompletion.create({
+          data: {
+            phaseId: activePhase.id,
+            completedAt: new Date(),
+            startingBalance: account.startingBalance,
+            endingBalance: account.currentBalance,
+            profitAchieved: new Prisma.Decimal(netProfit),
+          },
+        });
+
+        const remainingPhases = account.phases.filter((p) => p.id !== activePhase.id && !p.completed);
+        const allCompleted = remainingPhases.length === 0;
+
+        if (allCompleted) {
+          await tx.account.update({
+            where: { id: accountId },
+            data: {
+              challengeStatus: "CHALLENGE_PASSED",
+              isCompleted: true,
+              completedAt: new Date(),
+            },
+          });
+        } else {
+          await tx.account.update({
+            where: { id: accountId },
+            data: {
+              challengeStatus: "READY_FOR_NEXT_PHASE",
+            },
+          });
+        }
+      }
+    } else {
+      const allPhasesCompleted = account.phases.length > 0 && account.phases.every((p) => p.completed);
+      if (allPhasesCompleted && account.challengeStatus !== "CHALLENGE_PASSED") {
+        await tx.account.update({
+          where: { id: accountId },
+          data: {
+            challengeStatus: "CHALLENGE_PASSED",
+            isCompleted: true,
+            completedAt: new Date(),
+          },
+        });
+      }
+    }
   }
 }

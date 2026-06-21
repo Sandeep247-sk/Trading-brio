@@ -7,7 +7,17 @@ import { AnalyticsService } from "@/services/analytics.service";
 import { AccountService } from "@/services/account.service";
 import { prisma } from "@/lib/prisma";
 import { JournalAccountSelector } from "@/components/journal/journal-account-selector";
-import { BarChart3, TrendingUp, Target, Activity, Percent, PieChart as PieChartIcon } from "lucide-react";
+import { 
+  BarChart3, 
+  TrendingUp, 
+  Target, 
+  Activity, 
+  Percent, 
+  PieChart as PieChartIcon, 
+  Trophy, 
+  Sparkles,
+  Award
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EquityCurve } from "@/components/charts/equity-curve";
 import { MonthlyPnlChart } from "@/components/charts/monthly-pnl-chart";
@@ -29,7 +39,7 @@ export default async function AnalyticsPage() {
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || null;
   const account = await TradeService.getOrCreateUserAccount(session.user.id, selectedAccountId);
   
-  // Fetch ALL data in parallel — accounts, metrics, and analytics bundle
+  // Fetch ALL data in parallel
   const [accountsList, metrics, analyticsBundle] =
     await Promise.all([
       prisma.account.findMany({
@@ -60,7 +70,7 @@ export default async function AnalyticsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-900 pb-5">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl">
+          <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl font-poppins">
             Performance Analytics — <span className="text-blue-500">{metrics.accountInfo.name}</span>
           </h1>
           <p className="text-xs text-gray-500 mt-1 font-mono uppercase">
@@ -72,6 +82,95 @@ export default async function AnalyticsPage() {
           <JournalAccountSelector accounts={accountsList} currentAccountId={account.id} />
         </div>
       </div>
+
+      {/* Prop Challenge Timeline & Pass Probability Indicators */}
+      {metrics.accountInfo.accountType === "PROP_CHALLENGE" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="md:col-span-2 bg-card/85 border-gray-850">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+                <Trophy className="h-4 w-4 text-purple-400" />
+                Challenge Timeline & Phases
+              </CardTitle>
+              <CardDescription className="text-xs text-gray-500">
+                Tracking milestones and completion dates across all phases
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="relative pl-6 border-l border-gray-850 space-y-4">
+                  {metrics.accountInfo.phases.map((phase: any, idx: number) => {
+                    const isActive = !phase.completed && (idx === 0 || metrics.accountInfo.phases[idx - 1].completed);
+                    return (
+                      <div key={phase.id} className="relative">
+                        <span className={`absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full border-2 ${
+                          phase.completed 
+                            ? "bg-green-500 border-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" 
+                            : isActive 
+                            ? "bg-purple-500 border-purple-500 animate-pulse" 
+                            : "bg-gray-900 border-gray-800"
+                        }`} />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className={`text-xs font-bold ${
+                              phase.completed ? "text-green-400" : isActive ? "text-purple-400" : "text-gray-500"
+                            }`}>
+                              Phase {phase.phaseNumber}: {phase.phaseName}
+                            </h4>
+                            {phase.completed && (
+                              <span className="text-[9px] bg-green-500/10 text-green-400 px-1 rounded font-bold font-mono">
+                                Cleared
+                              </span>
+                            )}
+                            {isActive && (
+                              <span className="text-[9px] bg-purple-500/10 text-purple-400 px-1 rounded font-bold font-mono">
+                                Active
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-gray-400 mt-0.5">
+                            Target: {phase.profitTarget}% Profit • Daily Drawdown: {phase.dailyDrawdownLimit}% • Max Drawdown: {phase.maxDrawdownLimit}%
+                          </p>
+                          {phase.completed && phase.completedAt && (
+                            <p className="text-[9px] text-gray-500 font-mono mt-0.5">
+                              Completed on {new Date(phase.completedAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/85 border-gray-850">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+                <Sparkles className="h-4 w-4 text-green-400" />
+                Pass Probability
+              </CardTitle>
+              <CardDescription className="text-xs text-gray-500">
+                Algorithmic likelihood of challenge validation
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center justify-center pt-2 pb-6 space-y-4">
+              <div className="relative flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full border-[6px] border-gray-900 flex flex-col items-center justify-center relative overflow-hidden">
+                  <span className="text-2xl font-black font-mono text-green-400">
+                    {metrics.accountInfo.passProbability}%
+                  </span>
+                  <span className="text-[8px] text-gray-500 uppercase font-bold tracking-wider">Pass Rate</span>
+                </div>
+              </div>
+              <p className="text-[10px] text-gray-500 text-center leading-relaxed">
+                Probability is calculated dynamically based on historical win rate, average R:R, and drawdown variance.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Key Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">

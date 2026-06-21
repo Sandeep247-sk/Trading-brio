@@ -99,7 +99,6 @@ Account Sizing & Limits:
 - Currency: ${account.currency}
 - Max Risk Per Trade (%): ${account.maxRiskPerTrade ? account.maxRiskPerTrade.toString() + "%" : "No Limit"}
 - Max Daily Drawdown (%): ${account.maxDailyDrawdown ? account.maxDailyDrawdown.toString() + "%" : "No Limit"}
-- Max Weekly Drawdown (%): ${account.maxWeeklyDrawdown ? account.maxWeeklyDrawdown.toString() + "%" : "No Limit"}
 - Max Overall Drawdown (%): ${account.maxOverallDrawdown ? account.maxOverallDrawdown.toString() + "%" : "No Limit"}
 `;
 

@@ -13,9 +13,26 @@ export const createAccountSchema = z.object({
   // Risk Rules
   maxRiskPerTrade: z.number().min(0.01).max(100).nullable().optional(),
   maxDailyDrawdown: z.number().min(0.01).max(100).nullable().optional(),
-  maxWeeklyDrawdown: z.number().min(0.01).max(100).nullable().optional(),
   maxOverallDrawdown: z.number().min(0.01).max(100).nullable().optional(),
   maxTradesPerDay: z.number().int().positive().nullable().optional(),
+
+  // Prop firm fields
+  challengeName: z.string().max(100).nullable().optional(),
+  phasesCount: z.number().int().min(1).max(3).nullable().optional(),
+  fundedSince: z.string().nullable().optional(),
+  profitSplit: z.number().min(0).max(100).nullable().optional(),
+  challengeStatus: z.string().max(50).nullable().optional(),
+
+  // Challenge Phases Config
+  phases: z.array(
+    z.object({
+      phaseNumber: z.number().int().min(1),
+      phaseName: z.string().min(1).max(100),
+      profitTarget: z.number().min(0.01).max(100),
+      dailyDrawdownLimit: z.number().min(0.01).max(100),
+      maxDrawdownLimit: z.number().min(0.01).max(100),
+    })
+  ).optional(),
 });
 
 export const updateAccountSchema = createAccountSchema.partial();

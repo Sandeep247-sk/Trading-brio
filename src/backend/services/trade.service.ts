@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Direction, TradeResult, TradingSession } from "@prisma/client";
 import { CreateTradeInput, UpdateTradeInput } from "@/lib/validations/trade";
 import { revalidateTag } from "next/cache";
+import { AccountService } from "./account.service";
 
 export interface TradeFilters {
   pair?: string;
@@ -267,6 +268,9 @@ export class TradeService {
         });
       }
 
+      // Evaluate challenge rules
+      await AccountService.evaluateChallengeRules(tx, account.id);
+
       // Log audit action
       await tx.auditLog.create({
         data: {
@@ -371,6 +375,9 @@ export class TradeService {
         });
       }
 
+      // Evaluate challenge rules
+      await AccountService.evaluateChallengeRules(tx, existingTrade.accountId);
+
       // Log audit
       await tx.auditLog.create({
         data: {
@@ -417,6 +424,9 @@ export class TradeService {
           },
         });
       }
+
+      // Evaluate challenge rules
+      await AccountService.evaluateChallengeRules(tx, existingTrade.accountId);
 
       // Log audit
       await tx.auditLog.create({
