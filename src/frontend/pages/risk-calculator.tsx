@@ -7,7 +7,7 @@ import { AccountService } from "@/services/account.service";
 import { RiskCalculator } from "@/components/calculator/risk-calculator";
 
 export const metadata: Metadata = {
-  title: "Risk Calculator | Trader Brio",
+  title: "Risk & Lot Size Calculator | Trader Brio",
 };
 
 export default async function RiskCalculatorPage() {
@@ -22,14 +22,14 @@ export default async function RiskCalculatorPage() {
   const metrics = await AccountService.getAccountMetrics(session.user.id, account.id);
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto pb-12">
+    <div className="space-y-6 animate-fade-in max-w-6xl mx-auto pb-12">
       {/* Header */}
       <div className="border-b border-gray-900 pb-5">
         <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl">
-          Risk Calculator
+          Risk & Lot Size Calculator
         </h1>
         <p className="text-xs text-gray-500 mt-1">
-          Calculate position size and manage risk per trade for{" "}
+          Calculate position size, lot size, and manage risk per trade for{" "}
           <span className="text-blue-400 font-semibold">{metrics.accountInfo.name}</span>
         </p>
       </div>
