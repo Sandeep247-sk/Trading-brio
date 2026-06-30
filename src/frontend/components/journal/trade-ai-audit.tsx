@@ -136,26 +136,26 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
       case "A_PLUS":
       case "A":
         return {
-          bg: "bg-card/80 border-gray-850 text-white",
+          bg: "bg-card/80 border-border text-white",
           badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
           glow: ""
         };
       case "B":
         return {
-          bg: "bg-card/80 border-gray-850 text-white",
+          bg: "bg-card/80 border-border text-white",
           badge: "bg-blue-500/20 text-blue-300 border-blue-500/40",
           glow: ""
         };
       case "C":
         return {
-          bg: "bg-card/80 border-gray-850 text-white",
+          bg: "bg-card/80 border-border text-white",
           badge: "bg-amber-500/20 text-amber-300 border-amber-500/40",
           glow: ""
         };
       case "D":
       default:
         return {
-          bg: "bg-card/80 border-gray-850 text-white",
+          bg: "bg-card/80 border-border text-white",
           badge: "bg-red-500/20 text-red-300 border-red-500/40",
           glow: ""
         };
@@ -182,12 +182,12 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
   return (
     <div className="space-y-8 w-full">
       {/* Header and Subtitle */}
-      <div className="border-b border-gray-900 pb-5">
+      <div className="border-b border-border pb-5">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-blue-400" />
-          <h2 className="text-lg font-bold tracking-tight text-gray-150">AI Setup Audit Results</h2>
+          <h2 className="text-lg font-bold tracking-tight text-foreground">AI Setup Audit Results</h2>
         </div>
-        <p className="text-xs text-gray-400 mt-2 max-w-4xl leading-relaxed">
+        <p className="text-xs text-muted-foreground mt-2 max-w-4xl leading-relaxed">
           Our integrated AI will audit your trade, analyze execution quality, identify mistakes, detect rule violations, and provide actionable coaching insights to help improve your trading performance.
         </p>
       </div>
@@ -198,14 +198,14 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
         <div className="space-y-6 animate-pulse">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-28 bg-gray-900/30 border border-gray-850 rounded-xl p-5 space-y-3">
+              <div key={i} className="h-28 bg-muted/30 border border-border rounded-xl p-5 space-y-3">
                 <div className="h-4 bg-gray-850 rounded w-2/3" />
                 <div className="h-6 bg-gray-850 rounded w-1/3" />
                 <div className="h-2 bg-gray-850 rounded-full w-full" />
               </div>
             ))}
           </div>
-          <div className="h-32 bg-gray-900/30 border border-gray-850 rounded-xl p-5 space-y-3">
+          <div className="h-32 bg-muted/30 border border-border rounded-xl p-5 space-y-3">
             <div className="h-4 bg-gray-850 rounded w-1/4" />
             <div className="h-3 bg-gray-850 rounded w-full" />
             <div className="h-3 bg-gray-850 rounded w-5/6" />
@@ -218,8 +218,8 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
             <Sparkles className="h-8 w-8" />
           </div>
           <div className="max-w-md space-y-2">
-            <h3 className="text-base font-bold text-gray-200">Verify Compliance with our Integrated AI</h3>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <h3 className="text-base font-bold text-foreground">Verify Compliance with our Integrated AI</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Analysis your trade, see full AI Audit of your trade and get suggestions to improve your trading performance.
             </p>
           </div>
@@ -239,16 +239,16 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
           {/* KPI Dashboard Top Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Grade KPI Card */}
-            <div className={`p-5 rounded-xl border backdrop-blur-sm card-hover flex flex-col justify-between ${gradeColors?.bg || "border-gray-850 bg-card/80 text-white"}`}>
+            <div className={`p-5 rounded-xl border backdrop-blur-sm card-hover flex flex-col justify-between ${gradeColors?.bg || "border-border bg-card/80 text-white"}`}>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">Performance Grade</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-mono">Performance Grade</span>
                 <span className={`px-2 py-0.5 rounded text-[8px] font-black tracking-widest uppercase border ${gradeColors?.badge}`}>
                   Verified
                 </span>
               </div>
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="text-4xl font-black tracking-tight">{formatGrade(analysis.grade)}</span>
-                <span className="text-[10px] text-gray-400 font-medium">Execution Quality</span>
+                <span className="text-[10px] text-muted-foreground font-medium">Execution Quality</span>
               </div>
             </div>
 
@@ -259,14 +259,14 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
           </div>
 
           {/* AI Trade Summary Panel */}
-          <div className="bg-gray-950 border border-gray-850 p-6 rounded-xl relative overflow-hidden transition hover:border-gray-850">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-850 mb-4">
+          <div className="bg-card border border-border p-6 rounded-xl relative overflow-hidden transition hover:border-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-200 flex items-center gap-1.5">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <FileText className="h-4 w-4 text-blue-400" />
                   AI Trade Summary
                 </h3>
-                <p className="text-[10px] text-gray-500 mt-0.5">
+                <p className="text-[10px] text-muted-foreground mt-0.5">
                   Generated by Integrated AI
                 </p>
               </div>
@@ -276,7 +276,7 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
                 <button
                   type="button"
                   onClick={copySummary}
-                  className="h-8 px-3 bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 rounded-md text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
+                  className="h-8 px-3 bg-muted border border-border hover:border-border text-foreground/80 rounded-md text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
                 >
                   {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>{copied ? "Copied" : "Copy Summary"}</span>
@@ -284,7 +284,7 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
                 <button
                   type="button"
                   onClick={exportPDF}
-                  className="h-8 px-3 bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 rounded-md text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 print:hidden"
+                  className="h-8 px-3 bg-muted border border-border hover:border-border text-foreground/80 rounded-md text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 print:hidden"
                 >
                   <Printer className="h-3.5 w-3.5" />
                   <span>Print PDF</span>
@@ -300,11 +300,11 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
               </div>
             </div>
 
-            <div className="text-sm text-gray-300 leading-relaxed font-medium whitespace-pre-wrap">
+            <div className="text-sm text-foreground/80 leading-relaxed font-medium whitespace-pre-wrap">
               {getSummaryText()}
             </div>
             
-            <div className="mt-4 flex items-center gap-1 text-[9px] text-gray-500 font-mono">
+            <div className="mt-4 flex items-center gap-1 text-[9px] text-muted-foreground font-mono">
               <Clock className="h-3.5 w-3.5" />
               <span>Audited: {new Date(analysis.createdAt).toLocaleDateString()}</span>
             </div>
@@ -371,16 +371,16 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
           )}
 
           {/* Strategy Checklist Section */}
-          <div className="bg-gray-950 border border-gray-850 p-6 rounded-xl space-y-4">
+          <div className="bg-card border border-border p-6 rounded-xl space-y-4">
             <div>
               <h3 className="text-sm font-semibold text-gray-250">Strategy Checklist</h3>
-              <p className="text-xs text-gray-500 mt-1 font-mono">
+              <p className="text-xs text-muted-foreground mt-1 font-mono">
                 Strategy: {strategyName} (v{strategyVersion})
               </p>
             </div>
 
             {rules.length === 0 ? (
-              <div className="text-xs text-gray-500 italic">
+              <div className="text-xs text-muted-foreground italic">
                 No rules defined for this strategy version.
               </div>
             ) : (
@@ -391,7 +391,7 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
 
                   return (
                     <div key={cat} className="space-y-3">
-                      <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider font-mono">
+                      <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">
                         {cat.replace(/_/g, " ")}
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -406,7 +406,7 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
                             if (status === "fail") {
                               return "bg-red-950/5 border-red-900/30 hover:border-red-800 text-red-450";
                             }
-                            return "bg-gray-900/20 border-gray-850 hover:border-gray-800 text-gray-300";
+                            return "bg-muted/20 border-border hover:border-border text-foreground/80";
                           };
 
                           return (
@@ -419,13 +419,13 @@ export const TradeAiAudit: React.FC<TradeAiAuditProps> = ({
                               ) : status === "fail" ? (
                                 <XCircle className="h-4.5 w-4.5 text-rose-500 shrink-0 mt-0.5" />
                               ) : (
-                                <div className="h-4.5 w-4.5 rounded-full border border-gray-750 bg-gray-900/50 shrink-0 mt-0.5" />
+                                <div className="h-4.5 w-4.5 rounded-full border border-gray-750 bg-muted/50 shrink-0 mt-0.5" />
                               )}
                               
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-gray-200">{rule.name}</p>
+                                <p className="font-semibold text-foreground">{rule.name}</p>
                                 {rule.description && (
-                                  <p className="text-[10px] text-gray-500 mt-1 leading-relaxed">
+                                  <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
                                     {rule.description}
                                   </p>
                                 )}

@@ -31,11 +31,11 @@ export function JournalAccountSelector({
 
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Account</label>
+      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Account</label>
       <select
         value={currentAccountId}
         onChange={handleChange}
-        className="w-full h-9 px-2 bg-gray-900 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
+        className="w-full h-9 px-2 bg-muted border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-semibold"
       >
         {accounts.map((acc) => (
           <option key={acc.id} value={acc.id}>

@@ -20,7 +20,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
 
   if (screenshots.length === 0) {
     return (
-      <div className="border border-dashed border-gray-850 rounded-lg p-10 text-center text-xs text-gray-500 flex flex-col items-center justify-center gap-2">
+      <div className="border border-dashed border-border rounded-lg p-10 text-center text-xs text-muted-foreground flex flex-col items-center justify-center gap-2">
         <ImageIcon className="h-8 w-8 text-gray-650" />
         <span>No screenshots uploaded for this trade.</span>
       </div>
@@ -42,13 +42,13 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
   return (
     <div className="space-y-4">
       {/* Large screenshot display */}
-      <div className="border border-gray-850 bg-gray-950 rounded-lg overflow-hidden group relative flex flex-col">
+      <div className="border border-border bg-card rounded-lg overflow-hidden group relative flex flex-col">
         {/* Info bar */}
-        <div className="flex justify-between items-center text-xs px-4 py-3 border-b border-gray-850 bg-gray-900/20">
-          <span className="font-semibold text-gray-300 capitalize">
+        <div className="flex justify-between items-center text-xs px-4 py-3 border-b border-border bg-muted/20">
+          <span className="font-semibold text-foreground/80 capitalize">
             {activeImage.type.toLowerCase().replace(/_/g, " ")} Chart
           </span>
-          <span className="text-[10px] text-gray-500 font-mono">
+          <span className="text-[10px] text-muted-foreground font-mono">
             {(activeImage.sizeBytes / 1024).toFixed(0)} KB
           </span>
         </div>
@@ -56,7 +56,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
         {/* Image holder */}
         <div 
           onClick={() => setIsZoomed(true)}
-          className="relative bg-gray-950 aspect-video max-h-[500px] w-full cursor-zoom-in flex items-center justify-center"
+          className="relative bg-card aspect-video max-h-[500px] w-full cursor-zoom-in flex items-center justify-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -71,14 +71,14 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
               <button
                 type="button"
                 onClick={handlePrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-gray-900/80 hover:bg-gray-900 border border-gray-800 text-gray-400 hover:text-white rounded-full flex items-center justify-center transition backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-muted/80 hover:bg-muted border border-border text-muted-foreground hover:text-white rounded-full flex items-center justify-center transition backdrop-blur-sm opacity-0 group-hover:opacity-100"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 type="button"
                 onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-gray-900/80 hover:bg-gray-900 border border-gray-800 text-gray-400 hover:text-white rounded-full flex items-center justify-center transition backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-muted/80 hover:bg-muted border border-border text-muted-foreground hover:text-white rounded-full flex items-center justify-center transition backdrop-blur-sm opacity-0 group-hover:opacity-100"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -87,7 +87,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
 
           {/* Hover zoom overlay */}
           <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center pointer-events-none">
-            <div className="bg-gray-950/80 border border-gray-850 px-4 py-2 rounded-full text-white flex items-center justify-center gap-1.5 shadow-lg backdrop-blur-sm">
+            <div className="bg-card/90 border border-border px-4 py-2 rounded-full text-white flex items-center justify-center gap-1.5 shadow-lg backdrop-blur-sm">
               <Maximize2 className="h-4 w-4 text-blue-400" />
               <span className="text-xs font-semibold">Click to Zoom</span>
             </div>
@@ -105,7 +105,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
               className={`relative h-16 w-24 rounded border overflow-hidden shrink-0 transition ${
                 idx === activeIdx 
                   ? "border-blue-500 ring-1 ring-blue-500" 
-                  : "border-gray-850 hover:border-gray-700 opacity-60 hover:opacity-100"
+                  : "border-border hover:border-border opacity-60 hover:opacity-100"
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -114,7 +114,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
                 alt="thumbnail"
                 className="object-cover h-full w-full"
               />
-              <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] text-gray-300 py-0.5 text-center font-mono capitalize">
+              <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] text-foreground/80 py-0.5 text-center font-mono capitalize">
                 {img.type.replace(/_/, " ").substring(0, 10)}
               </div>
             </button>
@@ -134,13 +134,13 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
               <h4 className="text-sm font-bold text-white uppercase tracking-wider">
                 {screenshots[activeIdx].type.toLowerCase().replace(/_/g, " ")} Chart
               </h4>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Image {activeIdx + 1} of {screenshots.length}
               </p>
             </div>
             <button 
               onClick={() => setIsZoomed(false)}
-              className="h-10 w-10 bg-gray-900 border border-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition hover:scale-105"
+              className="h-10 w-10 bg-muted border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white transition hover:scale-105"
             >
               <X className="h-5 w-5" />
             </button>
@@ -155,7 +155,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
                   e.stopPropagation();
                   handlePrev();
                 }}
-                className="absolute left-0 sm:left-4 z-10 h-12 w-12 bg-gray-900/60 hover:bg-gray-900 border border-gray-800/50 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition hover:scale-105 backdrop-blur-sm"
+                className="absolute left-0 sm:left-4 z-10 h-12 w-12 bg-muted/60 hover:bg-muted border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-white transition hover:scale-105 backdrop-blur-sm"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
@@ -164,7 +164,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
             {/* Image display */}
             <div 
               onClick={(e) => e.stopPropagation()}
-              className="relative max-h-[85vh] max-w-[90vw] select-none rounded border border-gray-850 overflow-hidden shadow-2xl"
+              className="relative max-h-[85vh] max-w-[90vw] select-none rounded border border-border overflow-hidden shadow-2xl"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -181,7 +181,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
                   e.stopPropagation();
                   handleNext();
                 }}
-                className="absolute right-0 sm:right-4 z-10 h-12 w-12 bg-gray-900/60 hover:bg-gray-900 border border-gray-800/50 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition hover:scale-105 backdrop-blur-sm"
+                className="absolute right-0 sm:right-4 z-10 h-12 w-12 bg-muted/60 hover:bg-muted border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-white transition hover:scale-105 backdrop-blur-sm"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
@@ -189,7 +189,7 @@ export function ScreenshotGallery({ screenshots }: ScreenshotGalleryProps) {
           </div>
 
           {/* Footer stats */}
-          <div className="text-center text-xs text-gray-500 font-mono py-2">
+          <div className="text-center text-xs text-muted-foreground font-mono py-2">
             File Size: {(screenshots[activeIdx].sizeBytes / 1024).toFixed(0)} KB • Click anywhere to exit
           </div>
         </div>

@@ -68,12 +68,12 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-900 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl font-poppins">
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl font-poppins">
             Performance Analytics — <span className="text-blue-500">{metrics.accountInfo.name}</span>
           </h1>
-          <p className="text-xs text-gray-500 mt-1 font-mono uppercase">
+          <p className="text-xs text-muted-foreground mt-1 font-mono uppercase">
             {metrics.performance.totalTrades} total trades • Win Rate: {metrics.performance.winRate.toFixed(1)}% • 
             Profit Factor: {metrics.performance.profitFactor === null || metrics.performance.profitFactor === undefined || metrics.performance.profitFactor === Infinity ? "∞" : Number(metrics.performance.profitFactor).toFixed(2)}
           </p>
@@ -86,19 +86,19 @@ export default async function AnalyticsPage() {
       {/* Prop Challenge Timeline & Pass Probability Indicators */}
       {metrics.accountInfo.accountType === "PROP_CHALLENGE" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="md:col-span-2 bg-card/85 border-gray-850">
+          <Card className="md:col-span-2 bg-card/85 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
                 <Trophy className="h-4 w-4 text-purple-400" />
                 Challenge Timeline & Phases
               </CardTitle>
-              <CardDescription className="text-xs text-gray-500">
+              <CardDescription className="text-xs text-muted-foreground">
                 Tracking milestones and completion dates across all phases
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="relative pl-6 border-l border-gray-850 space-y-4">
+                <div className="relative pl-6 border-l border-border space-y-4">
                   {metrics.accountInfo.phases.map((phase: any, idx: number) => {
                     const isActive = !phase.completed && (idx === 0 || metrics.accountInfo.phases[idx - 1].completed);
                     return (
@@ -108,12 +108,12 @@ export default async function AnalyticsPage() {
                             ? "bg-green-500 border-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" 
                             : isActive 
                             ? "bg-purple-500 border-purple-500 animate-pulse" 
-                            : "bg-gray-900 border-gray-800"
+                            : "bg-muted border-border"
                         }`} />
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className={`text-xs font-bold ${
-                              phase.completed ? "text-green-400" : isActive ? "text-purple-400" : "text-gray-500"
+                              phase.completed ? "text-green-400" : isActive ? "text-purple-400" : "text-muted-foreground"
                             }`}>
                               Phase {phase.phaseNumber}: {phase.phaseName}
                             </h4>
@@ -128,11 +128,11 @@ export default async function AnalyticsPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-gray-400 mt-0.5">
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
                             Target: {phase.profitTarget}% Profit • Daily Drawdown: {phase.dailyDrawdownLimit}% • Max Drawdown: {phase.maxDrawdownLimit}%
                           </p>
                           {phase.completed && phase.completedAt && (
-                            <p className="text-[9px] text-gray-500 font-mono mt-0.5">
+                            <p className="text-[9px] text-muted-foreground font-mono mt-0.5">
                               Completed on {new Date(phase.completedAt).toLocaleDateString()}
                             </p>
                           )}
@@ -145,26 +145,26 @@ export default async function AnalyticsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card/85 border-gray-850">
+          <Card className="bg-card/85 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
                 <Sparkles className="h-4 w-4 text-green-400" />
                 Pass Probability
               </CardTitle>
-              <CardDescription className="text-xs text-gray-500">
+              <CardDescription className="text-xs text-muted-foreground">
                 Algorithmic likelihood of challenge validation
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center pt-2 pb-6 space-y-4">
               <div className="relative flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full border-[6px] border-gray-900 flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="w-24 h-24 rounded-full border-[6px] border-border flex flex-col items-center justify-center relative overflow-hidden">
                   <span className="text-2xl font-black font-mono text-green-400">
                     {metrics.accountInfo.passProbability}%
                   </span>
-                  <span className="text-[8px] text-gray-500 uppercase font-bold tracking-wider">Pass Rate</span>
+                  <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-wider">Pass Rate</span>
                 </div>
               </div>
-              <p className="text-[10px] text-gray-500 text-center leading-relaxed">
+              <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
                 Probability is calculated dynamically based on historical win rate, average R:R, and drawdown variance.
               </p>
             </CardContent>
@@ -177,26 +177,26 @@ export default async function AnalyticsPage() {
         {[
           { label: "Net P&L", value: `${metrics.performance.netProfit >= 0 ? "+" : ""}${formatVal(metrics.performance.netProfit)}`, color: metrics.performance.netProfit >= 0 ? "text-green-400" : "text-red-400" },
           { label: "Win Rate", value: `${metrics.performance.winRate.toFixed(1)}%`, color: "text-green-400" },
-          { label: "Profit Factor", value: metrics.performance.profitFactor === null || metrics.performance.profitFactor === undefined || metrics.performance.profitFactor === Infinity ? "∞" : Number(metrics.performance.profitFactor).toFixed(2), color: metrics.performance.profitFactor && metrics.performance.profitFactor !== Infinity && metrics.performance.profitFactor >= 1.5 ? "text-green-400" : metrics.performance.profitFactor && metrics.performance.profitFactor !== Infinity && metrics.performance.profitFactor > 0 ? "text-orange-400" : "text-gray-400" },
+          { label: "Profit Factor", value: metrics.performance.profitFactor === null || metrics.performance.profitFactor === undefined || metrics.performance.profitFactor === Infinity ? "∞" : Number(metrics.performance.profitFactor).toFixed(2), color: metrics.performance.profitFactor && metrics.performance.profitFactor !== Infinity && metrics.performance.profitFactor >= 1.5 ? "text-green-400" : metrics.performance.profitFactor && metrics.performance.profitFactor !== Infinity && metrics.performance.profitFactor > 0 ? "text-orange-400" : "text-muted-foreground" },
           { label: "Avg RR", value: `${metrics.performance.averageRR.toFixed(2)}R`, color: "text-blue-400" },
           { label: "Best Trade", value: `+${formatVal(metrics.performance.bestTrade)}`, color: "text-green-450" },
           { label: "Worst Trade", value: formatVal(metrics.performance.worstTrade), color: "text-red-450" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-gray-950 border border-gray-850 rounded-lg p-3">
-            <p className="text-[9px] text-gray-500 uppercase font-bold tracking-wider">{stat.label}</p>
+          <div key={stat.label} className="bg-card border border-border rounded-lg p-3">
+            <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">{stat.label}</p>
             <p className={`text-sm font-bold font-mono mt-0.5 ${stat.color}`}>{stat.value}</p>
           </div>
         ))}
       </div>
 
       {/* Equity Curve — Full Width */}
-      <Card className="bg-card/85 border-gray-850">
+      <Card className="bg-card/85 border-border">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
             <TrendingUp className="h-4 w-4 text-blue-500" />
             Equity Curve
           </CardTitle>
-          <CardDescription className="text-xs text-gray-500">
+          <CardDescription className="text-xs text-muted-foreground">
             Account balance progression over time
           </CardDescription>
         </CardHeader>
@@ -207,13 +207,13 @@ export default async function AnalyticsPage() {
 
       {/* Monthly P&L + Session Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 bg-card/85 border-gray-850">
+        <Card className="lg:col-span-2 bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <BarChart3 className="h-4 w-4 text-blue-500" />
               Monthly P&L
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">
+            <CardDescription className="text-xs text-muted-foreground">
               Net profit/loss by month
             </CardDescription>
           </CardHeader>
@@ -222,13 +222,13 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 border-gray-850">
+        <Card className="bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <PieChartIcon className="h-4 w-4 text-blue-500" />
               Session Distribution
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">
+            <CardDescription className="text-xs text-muted-foreground">
               Trades by session
             </CardDescription>
           </CardHeader>
@@ -240,13 +240,13 @@ export default async function AnalyticsPage() {
 
       {/* Pair Performance + P&L Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-card/85 border-gray-850">
+        <Card className="bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Target className="h-4 w-4 text-blue-500" />
               Pair Performance
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">
+            <CardDescription className="text-xs text-muted-foreground">
               Net P&L breakdown by trading pair
             </CardDescription>
           </CardHeader>
@@ -255,13 +255,13 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 border-gray-850">
+        <Card className="bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Activity className="h-4 w-4 text-blue-500" />
               P&L Distribution
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">
+            <CardDescription className="text-xs text-muted-foreground">
               Distribution of trade outcomes by profit/loss range
             </CardDescription>
           </CardHeader>
@@ -273,9 +273,9 @@ export default async function AnalyticsPage() {
 
       {/* Pair Performance Table */}
       {pairPerformance.length > 0 && (
-        <Card className="bg-card/85 border-gray-850">
+        <Card className="bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Percent className="h-4 w-4 text-blue-500" />
               Detailed Pair Statistics
             </CardTitle>
@@ -284,7 +284,7 @@ export default async function AnalyticsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-gray-900 text-gray-500 font-bold uppercase tracking-wider">
+                  <tr className="border-b border-border text-muted-foreground font-bold uppercase tracking-wider">
                     <th className="py-2.5 px-3">Pair</th>
                     <th className="py-2.5 px-3">Trades</th>
                     <th className="py-2.5 px-3">Wins</th>
@@ -294,17 +294,17 @@ export default async function AnalyticsPage() {
                     <th className="py-2.5 px-3">Avg RR</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-900 text-gray-300">
+                <tbody className="divide-y divide-gray-900 text-foreground/80">
                   {pairPerformance.map((p) => (
-                    <tr key={p.pair} className="hover:bg-gray-900/10 transition">
-                      <td className="py-3 px-3 font-semibold text-gray-200">{p.pair}</td>
+                    <tr key={p.pair} className="hover:bg-muted/10 transition">
+                      <td className="py-3 px-3 font-semibold text-foreground">{p.pair}</td>
                       <td className="py-3 px-3 font-mono">{p.trades}</td>
                       <td className="py-3 px-3 font-mono text-green-400">{p.wins}</td>
                       <td className="py-3 px-3 font-mono text-red-400">{p.losses}</td>
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-bold text-green-400">{p.winRate.toFixed(1)}%</span>
-                          <div className="w-16 bg-gray-900 rounded-full h-1.5 overflow-hidden">
+                          <div className="w-16 bg-muted rounded-full h-1.5 overflow-hidden">
                             <div
                               className="h-full bg-green-500 rounded-full"
                               style={{ width: `${p.winRate}%` }}

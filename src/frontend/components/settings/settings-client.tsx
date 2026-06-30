@@ -155,8 +155,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
     <div className="space-y-6 animate-fade-in max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-100">Settings</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Manage your account, security, and preferences
           </p>
         </div>
@@ -169,27 +169,27 @@ export function SettingsClient({ user }: SettingsClientProps) {
             <User className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-200">Profile</h2>
-            <p className="text-[10px] text-gray-500">Update your personal information</p>
+            <h2 className="text-sm font-bold text-foreground">Profile</h2>
+            <p className="text-[10px] text-muted-foreground">Update your personal information</p>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400">Full Name</label>
+            <label className="text-xs font-semibold text-muted-foreground">Full Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400">Email</label>
+            <label className="text-xs font-semibold text-muted-foreground">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
         </div>
@@ -217,39 +217,39 @@ export function SettingsClient({ user }: SettingsClientProps) {
             <Shield className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-200">Security</h2>
-            <p className="text-[10px] text-gray-500">Change password and manage sessions</p>
+            <h2 className="text-sm font-bold text-foreground">Security</h2>
+            <p className="text-[10px] text-muted-foreground">Change password and manage sessions</p>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400">Current Password</label>
+            <label className="text-xs font-semibold text-muted-foreground">Current Password</label>
             <input
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400">New Password</label>
+            <label className="text-xs font-semibold text-muted-foreground">New Password</label>
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Min 8 characters"
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400">Confirm Password</label>
+            <label className="text-xs font-semibold text-muted-foreground">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat new password"
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
         </div>
@@ -277,31 +277,31 @@ export function SettingsClient({ user }: SettingsClientProps) {
             <Database className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-200">Data Export</h2>
-            <p className="text-[10px] text-gray-500">Download your trade journal data</p>
+            <h2 className="text-sm font-bold text-foreground">Data Export</h2>
+            <p className="text-[10px] text-muted-foreground">Download your trade journal data</p>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400 flex items-center gap-1">
+            <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" /> From Date (optional)
             </label>
             <input
               type="date"
               value={exportFrom}
               onChange={(e) => setExportFrom(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400 flex items-center gap-1">
+            <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" /> To Date (optional)
             </label>
             <input
               type="date"
               value={exportTo}
               onChange={(e) => setExportTo(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             />
           </div>
         </div>
@@ -333,8 +333,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
               <ScrollText className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-200">Audit Log</h2>
-              <p className="text-[10px] text-gray-500">View all activity on your account</p>
+              <h2 className="text-sm font-bold text-foreground">Audit Log</h2>
+              <p className="text-[10px] text-muted-foreground">View all activity on your account</p>
             </div>
           </div>
           <Link
@@ -355,34 +355,34 @@ export function SettingsClient({ user }: SettingsClientProps) {
           </div>
           <div>
             <h2 className="text-sm font-bold text-red-400">Danger Zone</h2>
-            <p className="text-[10px] text-gray-500">Irreversible actions — proceed with caution</p>
+            <p className="text-[10px] text-muted-foreground">Irreversible actions — proceed with caution</p>
           </div>
         </div>
 
         <div className="p-4 rounded-lg border border-red-900/30 bg-red-950/10 space-y-3">
           <div className="flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
               Deleting your account will permanently remove all your trades, strategies, accounts, analytics, and violations data. This action <strong className="text-red-400">cannot be undone</strong>.
             </p>
           </div>
           <div className="space-y-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-400">Enter your password to confirm</label>
+              <label className="text-xs font-semibold text-muted-foreground">Enter your password to confirm</label>
               <input
                 type="password"
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
                 placeholder="Your current password"
-                className="w-full sm:w-80 h-10 px-3 bg-gray-950 border border-red-900/30 rounded text-sm text-gray-300 focus:outline-none focus:border-red-500"
+                className="w-full sm:w-80 h-10 px-3 bg-card border border-red-900/30 rounded text-sm text-foreground/80 focus:outline-none focus:border-red-500"
               />
             </div>
-            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
                 checked={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.checked)}
-                className="rounded border-gray-700 bg-gray-950 text-red-600 focus:ring-red-500"
+                className="rounded border-border bg-card text-red-600 focus:ring-red-500"
               />
               I understand this is permanent and cannot be undone
             </label>

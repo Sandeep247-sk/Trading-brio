@@ -159,13 +159,13 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
     <form onSubmit={handleSubmit} className="space-y-8 max-w-5xl">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Core Metadata */}
-        <div className="md:col-span-2 space-y-6 bg-gray-900/40 p-6 border border-gray-800 rounded-lg">
-          <h3 className="text-base font-semibold text-gray-200">Strategy Parameters</h3>
+        <div className="md:col-span-2 space-y-6 bg-muted/40 p-6 border border-border rounded-lg">
+          <h3 className="text-base font-semibold text-foreground">Strategy Parameters</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Strategy Name */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Strategy Name
               </label>
               <input
@@ -173,19 +173,19 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
                 placeholder="e.g. ICT Silver Bullet"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             {/* Target Asset Market */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Asset Class / Market
               </label>
               <select
                 value={market}
                 onChange={(e) => setMarket(e.target.value as Market)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
               >
                 <option value={Market.XAUUSD}>Gold (XAUUSD)</option>
                 <option value={Market.FOREX}>Forex</option>
@@ -197,7 +197,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
 
           {/* Session Selection */}
           <div className="space-y-2 pt-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
               Preferred Trading Sessions
             </label>
             <div className="flex flex-wrap gap-3">
@@ -211,7 +211,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
                     className={`px-4 py-2 text-xs font-semibold rounded-md border transition ${
                       isActive
                         ? "bg-blue-600/10 border-blue-500 text-blue-400"
-                        : "bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-700"
+                        : "bg-card border-border text-muted-foreground hover:border-border"
                     }`}
                   >
                     {sess.replace(/_/g, " ")}
@@ -223,16 +223,16 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
         </div>
 
         {/* Info panel */}
-        <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg flex flex-col justify-between">
+        <div className="bg-muted/40 p-6 border border-border rounded-lg flex flex-col justify-between">
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-200">Rulebook Version Control</h3>
-            <p className="text-xs text-gray-500 leading-relaxed">
+            <h3 className="text-sm font-semibold text-foreground">Rulebook Version Control</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               When updating a strategy, the active version is snapshot-archived. We maintain full rule audit trails so old trades continue to check rules as they existed at execution time.
             </p>
           </div>
           {isEdit && (
-            <div className="space-y-2 pt-4 border-t border-gray-800">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <div className="space-y-2 pt-4 border-t border-border">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Changelog / Version Notes
               </label>
               <textarea
@@ -240,7 +240,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
                 placeholder="Briefly state what rules changed (e.g., Added 5m FVG confluence)"
                 value={changelogNotes}
                 onChange={(e) => setChangelogNotes(e.target.value)}
-                className="w-full p-2.5 bg-gray-950 border border-gray-800 rounded-md text-xs text-gray-300 focus:outline-none focus:border-blue-500"
+                className="w-full p-2.5 bg-card border border-border rounded-md text-xs text-foreground/80 focus:outline-none focus:border-blue-500"
               />
             </div>
           )}
@@ -248,10 +248,10 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
       </div>
 
       {/* Timeframes & Entry Conditions (Tags List) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-900/40 p-6 border border-gray-800 rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-muted/40 p-6 border border-border rounded-lg">
         {/* HTF */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
             Higher Timeframes (HTF)
           </label>
           <div className="flex gap-2">
@@ -261,21 +261,21 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
               value={htfInput}
               onChange={(e) => setHtfInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag(htfInput, setHtfInput, higherTimeframes, setHigherTimeframes))}
-              className="flex-1 h-9 px-2.5 bg-gray-950 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500"
+              className="flex-1 h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500"
             />
             <button
               type="button"
               onClick={() => addTag(htfInput, setHtfInput, higherTimeframes, setHigherTimeframes)}
-              className="px-2.5 h-9 bg-gray-850 hover:bg-gray-800 border border-gray-800 rounded text-xs font-semibold text-gray-300"
+              className="px-2.5 h-9 bg-gray-850 hover:bg-muted border border-border rounded text-xs font-semibold text-foreground/80"
             >
               Add
             </button>
           </div>
           <div className="flex flex-wrap gap-2 min-h-[40px]">
             {higherTimeframes.map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-950 border border-gray-800 text-gray-300 text-xs rounded-full font-mono font-bold">
+              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-card border border-border text-foreground/80 text-xs rounded-full font-mono font-bold">
                 {tag}
-                <button type="button" onClick={() => setHigherTimeframes(higherTimeframes.filter((t) => t !== tag))} className="text-gray-500 hover:text-red-400">
+                <button type="button" onClick={() => setHigherTimeframes(higherTimeframes.filter((t) => t !== tag))} className="text-muted-foreground hover:text-red-400">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -285,7 +285,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
 
         {/* Entry Timeframes */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
             Execution Timeframes
           </label>
           <div className="flex gap-2">
@@ -295,21 +295,21 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
               value={etInput}
               onChange={(e) => setEtInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag(etInput, setEtInput, entryTimeframes, setEntryTimeframes))}
-              className="flex-1 h-9 px-2.5 bg-gray-950 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500"
+              className="flex-1 h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500"
             />
             <button
               type="button"
               onClick={() => addTag(etInput, setEtInput, entryTimeframes, setEntryTimeframes)}
-              className="px-2.5 h-9 bg-gray-850 hover:bg-gray-800 border border-gray-800 rounded text-xs font-semibold text-gray-300"
+              className="px-2.5 h-9 bg-gray-850 hover:bg-muted border border-border rounded text-xs font-semibold text-foreground/80"
             >
               Add
             </button>
           </div>
           <div className="flex flex-wrap gap-2 min-h-[40px]">
             {entryTimeframes.map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-950 border border-gray-800 text-gray-300 text-xs rounded-full font-mono font-bold">
+              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-card border border-border text-foreground/80 text-xs rounded-full font-mono font-bold">
                 {tag}
-                <button type="button" onClick={() => setEntryTimeframes(entryTimeframes.filter((t) => t !== tag))} className="text-gray-500 hover:text-red-400">
+                <button type="button" onClick={() => setEntryTimeframes(entryTimeframes.filter((t) => t !== tag))} className="text-muted-foreground hover:text-red-400">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -319,7 +319,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
 
         {/* Entry Conditions */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
             Entry Confluences
           </label>
           <div className="flex gap-2">
@@ -329,21 +329,21 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
               value={ecInput}
               onChange={(e) => setEcInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag(ecInput, setEcInput, entryConditions, setEntryConditions))}
-              className="flex-1 h-9 px-2.5 bg-gray-950 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500"
+              className="flex-1 h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500"
             />
             <button
               type="button"
               onClick={() => addTag(ecInput, setEcInput, entryConditions, setEntryConditions)}
-              className="px-2.5 h-9 bg-gray-850 hover:bg-gray-800 border border-gray-800 rounded text-xs font-semibold text-gray-300"
+              className="px-2.5 h-9 bg-gray-850 hover:bg-muted border border-border rounded text-xs font-semibold text-foreground/80"
             >
               Add
             </button>
           </div>
           <div className="flex flex-wrap gap-2 min-h-[40px]">
             {entryConditions.map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-950 border border-gray-800 text-gray-300 text-xs rounded-full">
+              <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-card border border-border text-foreground/80 text-xs rounded-full">
                 {tag}
-                <button type="button" onClick={() => setEntryConditions(entryConditions.filter((t) => t !== tag))} className="text-gray-500 hover:text-red-400">
+                <button type="button" onClick={() => setEntryConditions(entryConditions.filter((t) => t !== tag))} className="text-muted-foreground hover:text-red-400">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -355,13 +355,13 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
       {/* Key-Value Rules Editors (Risk & Management) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Risk Rules */}
-        <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg space-y-4">
+        <div className="bg-muted/40 p-6 border border-border rounded-lg space-y-4">
           <h3 className="text-sm font-semibold text-gray-250 uppercase tracking-wide">Risk Controls</h3>
           
           <div className="space-y-2">
             {riskRules.map((rule, idx) => (
-              <div key={idx} className="flex justify-between items-center bg-gray-950 border border-gray-850 p-2.5 rounded text-xs">
-                <span className="font-semibold text-gray-400">{rule.name}</span>
+              <div key={idx} className="flex justify-between items-center bg-card border border-border p-2.5 rounded text-xs">
+                <span className="font-semibold text-muted-foreground">{rule.name}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-blue-400 font-medium font-mono">{rule.value}</span>
                   <button
@@ -376,13 +376,13 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-850/80">
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/80">
             <input
               type="text"
               placeholder="Name (e.g. Max Contracts)"
               value={newRiskName}
               onChange={(e) => setNewRiskName(e.target.value)}
-              className="h-9 px-2.5 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none"
+              className="h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none"
             />
             <div className="flex gap-2">
               <input
@@ -390,7 +390,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
                 placeholder="Value (e.g. 5 Lots)"
                 value={newRiskVal}
                 onChange={(e) => setNewRiskVal(e.target.value)}
-                className="flex-1 h-9 px-2.5 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none"
+                className="flex-1 h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none"
               />
               <button
                 type="button"
@@ -410,13 +410,13 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
         </div>
 
         {/* Management Rules */}
-        <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg space-y-4">
+        <div className="bg-muted/40 p-6 border border-border rounded-lg space-y-4">
           <h3 className="text-sm font-semibold text-gray-250 uppercase tracking-wide">Management Controls</h3>
           
           <div className="space-y-2">
             {managementRules.map((rule, idx) => (
-              <div key={idx} className="flex justify-between items-center bg-gray-950 border border-gray-850 p-2.5 rounded text-xs">
-                <span className="font-semibold text-gray-400">{rule.name}</span>
+              <div key={idx} className="flex justify-between items-center bg-card border border-border p-2.5 rounded text-xs">
+                <span className="font-semibold text-muted-foreground">{rule.name}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-blue-400 font-medium font-mono">{rule.value}</span>
                   <button
@@ -431,13 +431,13 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-850/80">
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/80">
             <input
               type="text"
               placeholder="Name (e.g. Profit targets)"
               value={newMgmtName}
               onChange={(e) => setNewMgmtName(e.target.value)}
-              className="h-9 px-2.5 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none"
+              className="h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none"
             />
             <div className="flex gap-2">
               <input
@@ -445,7 +445,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
                 placeholder="Value (e.g. Partial 50% at 2R)"
                 value={newMgmtVal}
                 onChange={(e) => setNewMgmtVal(e.target.value)}
-                className="flex-1 h-9 px-2.5 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none"
+                className="flex-1 h-9 px-2.5 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none"
               />
               <button
                 type="button"
@@ -467,7 +467,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
 
       {/* Checklist Rules Editor */}
       <div className="space-y-3">
-        <label className="text-sm font-semibold text-gray-300 block">
+        <label className="text-sm font-semibold text-foreground/80 block">
           Strategy Checklist Rules Builder
         </label>
         <ChecklistBuilder initialRules={rules} onRulesChange={setRules} />
@@ -478,7 +478,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ initialData }) => {
         <button
           type="button"
           onClick={() => router.push("/strategy")}
-          className="px-5 h-11 border border-gray-800 rounded-md text-sm text-gray-400 hover:text-white hover:bg-gray-900 transition"
+          className="px-5 h-11 border border-border rounded-md text-sm text-muted-foreground hover:text-white hover:bg-muted transition"
         >
           Cancel
         </button>

@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -12,6 +10,7 @@ import {
   AreaChart,
   ReferenceLine,
 } from "recharts";
+import { useChartTheme } from "./use-chart-theme";
 
 interface EquityPoint {
   date: string;
@@ -30,28 +29,37 @@ const formatCurrency = (val: number, currency = "USD") => {
   return `${symbol}${val.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 };
 
-const CustomTooltip = ({ active, payload, label, currency }: any) => {
+function ChartTooltip({ active, payload, label, currency, theme }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-gray-950/95 border border-gray-800 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm">
-      <p className="text-[10px] text-gray-500 font-mono">{label}</p>
-      <p className="text-sm font-bold text-gray-200 font-mono">
+    <div
+      className="rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm text-sm"
+      style={{
+        background: theme.tooltipBg,
+        border: `1px solid ${theme.tooltipBorder}`,
+        color: theme.tooltipText,
+      }}
+    >
+      <p className="text-[10px] font-mono" style={{ color: theme.tooltipMuted }}>{label}</p>
+      <p className="text-sm font-bold font-mono" style={{ color: theme.tooltipText }}>
         {formatCurrency(payload[0].value, currency)}
       </p>
       {payload[0].payload.pnl !== 0 && (
-        <p className={`text-[10px] font-mono ${payload[0].payload.pnl > 0 ? "text-green-400" : "text-red-400"}`}>
+        <p className={`text-[10px] font-mono ${payload[0].payload.pnl > 0 ? "text-green-500" : "text-red-500"}`}>
           {payload[0].payload.pnl > 0 ? "+" : ""}
           {formatCurrency(payload[0].payload.pnl, currency)}
         </p>
       )}
     </div>
   );
-};
+}
 
 export function EquityCurve({ data, currency = "USD", mini = false }: EquityCurveProps) {
+  const theme = useChartTheme();
+
   if (data.length < 2) {
     return (
-      <div className={`flex items-center justify-center text-gray-500 text-xs ${mini ? "h-[120px]" : "h-[300px]"}`}>
+      <div className={`flex items-center justify-center text-muted-foreground text-xs ${mini ? "h-[120px]" : "h-[300px]"}`}>
         Not enough data to display equity curve
       </div>
     );
@@ -96,26 +104,26 @@ export function EquityCurve({ data, currency = "USD", mini = false }: EquityCurv
             <stop offset="95%" stopColor={gradientColor} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1a1f2e" />
+        <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
         <XAxis
           dataKey="date"
-          tick={{ fill: "#6b7280", fontSize: 10 }}
-          tickLine={{ stroke: "#1a1f2e" }}
-          axisLine={{ stroke: "#1a1f2e" }}
+          tick={{ fill: theme.tick, fontSize: 10 }}
+          tickLine={{ stroke: theme.axis }}
+          axisLine={{ stroke: theme.axis }}
           tickFormatter={(val) => {
             const d = new Date(val);
             return `${d.getMonth() + 1}/${d.getDate()}`;
           }}
         />
         <YAxis
-          tick={{ fill: "#6b7280", fontSize: 10 }}
-          tickLine={{ stroke: "#1a1f2e" }}
-          axisLine={{ stroke: "#1a1f2e" }}
+          tick={{ fill: theme.tick, fontSize: 10 }}
+          tickLine={{ stroke: theme.axis }}
+          axisLine={{ stroke: theme.axis }}
           tickFormatter={(val) => formatCurrency(val, currency)}
           width={75}
         />
-        <Tooltip content={<CustomTooltip currency={currency} />} />
-        <ReferenceLine y={startBalance} stroke="#374151" strokeDasharray="5 5" />
+        <Tooltip content={<ChartTooltip currency={currency} theme={theme} />} />
+        <ReferenceLine y={startBalance} stroke={theme.reference} strokeDasharray="5 5" />
         <Area
           type="monotone"
           dataKey="balance"
@@ -123,7 +131,7 @@ export function EquityCurve({ data, currency = "USD", mini = false }: EquityCurv
           strokeWidth={2}
           fill="url(#equityGradient)"
           dot={false}
-          activeDot={{ r: 4, fill: lineColor, stroke: "#0f1419", strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: lineColor, stroke: theme.activeDotStroke, strokeWidth: 2 }}
         />
       </AreaChart>
     </ResponsiveContainer>

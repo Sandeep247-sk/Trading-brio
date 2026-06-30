@@ -108,10 +108,10 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-300">
+        <label className="text-sm font-medium text-foreground/80">
           Trade Screenshots (Max {UPLOAD_CONFIG.maxFilesPerTrade})
         </label>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-muted-foreground">
           JPG, PNG, WebP up to 10MB
         </span>
       </div>
@@ -120,7 +120,7 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
         onDragOver={onDragOver}
         onDrop={onDrop}
         onClick={handleSelectFiles}
-        className="flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-lg p-6 bg-gray-950 hover:bg-gray-900/50 hover:border-gray-700 transition cursor-pointer text-center group"
+        className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 bg-card hover:bg-muted/50 hover:border-border transition cursor-pointer text-center group"
       >
         <input
           type="file"
@@ -130,12 +130,12 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
           accept={UPLOAD_CONFIG.allowedMimeTypes.join(",")}
           className="hidden"
         />
-        <Upload className="h-8 w-8 text-gray-500 group-hover:text-blue-500 transition mb-3" />
-        <p className="text-sm text-gray-300 font-medium">
+        <Upload className="h-8 w-8 text-muted-foreground group-hover:text-blue-500 transition mb-3" />
+        <p className="text-sm text-foreground/80 font-medium">
           Drag & drop your screenshots here, or{" "}
           <span className="text-blue-500 group-hover:underline">browse</span>
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Supports Before Entry, Entry, and Exit charts
         </p>
       </div>
@@ -151,9 +151,9 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
           {uploadedFiles.map((uploaded) => (
             <div
               key={uploaded.id}
-              className="relative border border-gray-800 bg-gray-950 rounded-md p-2 flex flex-col space-y-2"
+              className="relative border border-border bg-card rounded-md p-2 flex flex-col space-y-2"
             >
-              <div className="relative aspect-video w-full rounded overflow-hidden bg-gray-900 flex items-center justify-center">
+              <div className="relative aspect-video w-full rounded overflow-hidden bg-muted flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={uploaded.previewUrl}
@@ -170,11 +170,11 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs text-gray-400 truncate font-mono">
+                <p className="text-xs text-muted-foreground truncate font-mono">
                   {uploaded.file.name}
                 </p>
                 <div className="flex items-center space-x-1">
-                  <span className="text-[10px] text-gray-500 font-medium shrink-0">
+                  <span className="text-[10px] text-muted-foreground font-medium shrink-0">
                     Type:
                   </span>
                   <select
@@ -182,7 +182,7 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
                     onChange={(e) =>
                       changeFileType(uploaded.id, e.target.value as ImageType)
                     }
-                    className="w-full text-xs bg-gray-900 border border-gray-800 rounded px-1.5 py-0.5 text-gray-300 focus:outline-none focus:border-blue-500"
+                    className="w-full text-xs bg-muted border border-border rounded px-1.5 py-0.5 text-foreground/80 focus:outline-none focus:border-blue-500"
                   >
                     <option value={ImageType.BEFORE_ENTRY}>Before Entry</option>
                     <option value={ImageType.ENTRY}>Entry</option>

@@ -46,7 +46,7 @@ const actionColors: Record<string, string> = {
   UPDATE: "bg-blue-950/30 text-blue-400 border-blue-800/30",
   DELETE: "bg-red-950/30 text-red-400 border-red-800/30",
   LOGIN: "bg-purple-950/30 text-purple-400 border-purple-800/30",
-  LOGOUT: "bg-gray-900 text-gray-400 border-gray-800/30",
+  LOGOUT: "bg-muted text-muted-foreground border-border/30",
   EXPORT: "bg-cyan-950/30 text-cyan-400 border-cyan-800/30",
   ANALYZE: "bg-amber-950/30 text-amber-400 border-amber-800/30",
 };
@@ -98,19 +98,19 @@ export function AuditLogClient() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-900 pb-5">
+      <div className="flex items-center justify-between border-b border-border pb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/settings"
-            className="h-8 w-8 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-200 hover:border-gray-700 transition"
+            className="h-8 w-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-border transition"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl">
+            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Audit Log
             </h1>
-            <p className="text-xs text-gray-500 mt-0.5 font-mono uppercase">
+            <p className="text-xs text-muted-foreground mt-0.5 font-mono uppercase">
               {logs.length} total entries
             </p>
           </div>
@@ -120,22 +120,22 @@ export function AuditLogClient() {
       {/* Filters */}
       <div className="glass-card p-4 rounded-lg flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search entities, actions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 bg-gray-950 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+            className="w-full h-10 pl-9 pr-4 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
           />
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-gray-500" />
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
             <select
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
-              className="h-10 px-3 bg-gray-950 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
+              className="h-10 px-3 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-semibold"
             >
               <option value="ALL">All Actions</option>
               <option value="CREATE">Create</option>
@@ -149,7 +149,7 @@ export function AuditLogClient() {
           <select
             value={entityFilter}
             onChange={(e) => setEntityFilter(e.target.value)}
-            className="h-10 px-3 bg-gray-950 border border-gray-800 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
+            className="h-10 px-3 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-semibold"
           >
             <option value="ALL">All Entities</option>
             {entities.map((e) => (
@@ -164,15 +164,15 @@ export function AuditLogClient() {
       {/* Timeline */}
       {loading ? (
         <div className="glass-card p-12 rounded-lg flex items-center justify-center">
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <Activity className="h-4 w-4 animate-pulse" />
             Loading audit logs...
           </div>
         </div>
       ) : filteredLogs.length === 0 ? (
         <div className="glass-card p-12 rounded-lg text-center space-y-3">
-          <ScrollText className="h-10 w-10 text-gray-700 mx-auto" />
-          <p className="text-sm text-gray-500">No audit log entries found</p>
+          <ScrollText className="h-10 w-10 text-muted-foreground/50 mx-auto" />
+          <p className="text-sm text-muted-foreground">No audit log entries found</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -188,21 +188,21 @@ export function AuditLogClient() {
                   className="w-full p-4 flex items-center gap-4 text-left"
                 >
                   {/* Timeline dot */}
-                  <div className={`h-8 w-8 shrink-0 rounded-lg border flex items-center justify-center ${actionColors[log.action] || "bg-gray-900 text-gray-400 border-gray-800"}`}>
+                  <div className={`h-8 w-8 shrink-0 rounded-lg border flex items-center justify-center ${actionColors[log.action] || "bg-muted text-muted-foreground border-border"}`}>
                     {actionIcons[log.action] || <Activity className="h-3.5 w-3.5" />}
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${actionColors[log.action] || "bg-gray-900 text-gray-400 border-gray-800"}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${actionColors[log.action] || "bg-muted text-muted-foreground border-border"}`}>
                         {log.action}
                       </span>
-                      <span className="text-xs font-semibold text-gray-300 capitalize">
+                      <span className="text-xs font-semibold text-foreground/80 capitalize">
                         {log.entity}
                       </span>
                       {log.entityId && (
-                        <span className="text-[10px] font-mono text-gray-600 truncate max-w-[120px]">
+                        <span className="text-[10px] font-mono text-muted-foreground/60 truncate max-w-[120px]">
                           {log.entityId.slice(0, 8)}...
                         </span>
                       )}
@@ -210,7 +210,7 @@ export function AuditLogClient() {
                   </div>
 
                   {/* Timestamp */}
-                  <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono shrink-0">
+                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono shrink-0">
                     <Clock className="h-3 w-3" />
                     {new Date(log.createdAt).toLocaleString(undefined, {
                       month: "short",
@@ -222,14 +222,14 @@ export function AuditLogClient() {
 
                   {/* Expand indicator */}
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-600 transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 text-muted-foreground/60 transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
                   />
                 </button>
 
                 {/* Expanded details */}
                 {isExpanded && log.details && (
-                  <div className="px-4 pb-4 pt-0 border-t border-gray-900/50">
-                    <pre className="text-[10px] text-gray-400 bg-gray-950 rounded p-3 overflow-x-auto font-mono">
+                  <div className="px-4 pb-4 pt-0 border-t border-border/50">
+                    <pre className="text-[10px] text-muted-foreground bg-card rounded p-3 overflow-x-auto font-mono">
                       {JSON.stringify(log.details, null, 2)}
                     </pre>
                   </div>

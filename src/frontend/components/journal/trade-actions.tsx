@@ -45,14 +45,14 @@ export const TradeActions: React.FC<TradeActionsProps> = ({ tradeId }) => {
     <div className="flex items-center space-x-2">
       <Link
         href="/journal"
-        className="px-3.5 h-10 border border-gray-850 bg-gray-950 hover:bg-gray-900 text-gray-400 hover:text-white rounded-md text-sm font-semibold flex items-center gap-1.5 transition"
+        className="px-3.5 h-10 border border-border bg-card hover:bg-muted text-muted-foreground hover:text-white rounded-md text-sm font-semibold flex items-center gap-1.5 transition"
       >
         <ArrowLeft className="h-4 w-4" />
         Back
       </Link>
       <Link
         href={`/journal/${tradeId}/edit`}
-        className="px-3.5 h-10 border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 hover:text-white rounded-md text-sm font-semibold flex items-center gap-1.5 transition"
+        className="px-3.5 h-10 border border-border bg-muted/60 hover:bg-muted text-foreground/80 hover:text-white rounded-md text-sm font-semibold flex items-center gap-1.5 transition"
       >
         <Edit className="h-4 w-4" />
         Edit
@@ -83,7 +83,7 @@ export const TradeActions: React.FC<TradeActionsProps> = ({ tradeId }) => {
           <button
             type="button"
             onClick={() => setShowConfirm(false)}
-            className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-xs font-bold transition flex items-center gap-0.5"
+            className="px-2 py-1 bg-muted hover:bg-gray-700 text-foreground/80 rounded text-xs font-bold transition flex items-center gap-0.5"
           >
             <X className="h-3 w-3" />
             No

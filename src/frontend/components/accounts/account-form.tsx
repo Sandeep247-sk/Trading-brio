@@ -231,55 +231,55 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Basic Information */}
-        <div className="space-y-4 bg-gray-900/40 p-5 border border-gray-800 rounded-lg">
+        <div className="space-y-4 bg-muted/40 p-5 border border-border rounded-lg">
           <h3 className="text-sm font-semibold text-gray-250 uppercase tracking-wider">
             General Info
           </h3>
 
           <div className="space-y-3">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400">Account Name</label>
+              <label className="text-xs font-semibold text-muted-foreground">Account Name</label>
               <input
                 type="text"
                 placeholder="e.g. My Funded 50K"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-medium"
+                className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-medium"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Broker Name</label>
+                <label className="text-xs font-semibold text-muted-foreground">Broker Name</label>
                 <input
                   type="text"
                   placeholder="e.g. ThinkMarkets"
                   value={brokerName}
                   onChange={(e) => setBrokerName(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Account Number (Opt)</label>
+                <label className="text-xs font-semibold text-muted-foreground">Account Number (Opt)</label>
                 <input
                   type="text"
                   placeholder="e.g. 102559"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Account Type</label>
+                <label className="text-xs font-semibold text-muted-foreground">Account Type</label>
                 <select
                   value={accountType}
                   onChange={(e) => setAccountType(e.target.value as AccountType)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
                 >
                   <option value={AccountType.DEMO}>Personal Demo Account</option>
                   <option value={AccountType.LIVE}>Personal Live Account</option>
@@ -289,11 +289,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Platform</label>
+                <label className="text-xs font-semibold text-muted-foreground">Platform</label>
                 <select
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value as TradingPlatform)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
                 >
                   <option value={TradingPlatform.MT4}>MT4</option>
                   <option value={TradingPlatform.MT5}>MT5</option>
@@ -307,24 +307,24 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Starting Balance</label>
+                <label className="text-xs font-semibold text-muted-foreground">Starting Balance</label>
                 <input
                   type="text"
                   inputMode="decimal"
                   placeholder="Starting Balance"
                   value={startingBalance}
                   onChange={(e) => setStartingBalance(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono font-bold"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono font-bold"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400">Currency</label>
+                <label className="text-xs font-semibold text-muted-foreground">Currency</label>
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none"
+                  className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="INR">INR (₹)</option>
@@ -340,9 +340,9 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 id="isDefault"
                 checked={isDefault}
                 onChange={(e) => setIsDefault(e.target.checked)}
-                className="rounded border-gray-800 bg-gray-950 text-blue-600 focus:ring-0"
+                className="rounded border-border bg-card text-blue-600 focus:ring-0"
               />
-              <label htmlFor="isDefault" className="text-xs font-medium text-gray-400 cursor-pointer select-none">
+              <label htmlFor="isDefault" className="text-xs font-medium text-muted-foreground cursor-pointer select-none">
                 Set as Default Trading Account
               </label>
             </div>
@@ -350,7 +350,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         </div>
 
         {/* Dynamic configurations based on account type selection */}
-        <div className="space-y-4 bg-gray-900/40 p-5 border border-gray-800 rounded-lg">
+        <div className="space-y-4 bg-muted/40 p-5 border border-border rounded-lg">
           {accountType === AccountType.PROP_CHALLENGE ? (
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-gray-250 uppercase tracking-wider">
@@ -359,11 +359,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-400">Challenge Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Challenge Name</label>
                   <select
                     value={challengeName}
                     onChange={(e) => setChallengeName(e.target.value)}
-                    className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none"
+                    className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none"
                   >
                     <option value="Funding Pips">Funding Pips</option>
                     <option value="FTMO">FTMO</option>
@@ -374,11 +374,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-400">Phases</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Phases</label>
                   <select
                     value={phasesCount}
                     onChange={(e) => handlePhasesCountChange(Number(e.target.value))}
-                    className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none"
+                    className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none"
                   >
                     <option value={1}>1 Phase</option>
                     <option value={2}>2 Phase</option>
@@ -389,13 +389,13 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
               {challengeName === "Custom" && (
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-400">Custom Challenge Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Custom Challenge Name</label>
                   <input
                     type="text"
                     placeholder="e.g. Apex Funding"
                     value={customChallengeName}
                     onChange={(e) => setCustomChallengeName(e.target.value)}
-                    className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none"
+                    className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none"
                     required={challengeName === "Custom"}
                   />
                 </div>
@@ -403,11 +403,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
               {/* Dynamic Phases Config */}
               <div className="space-y-3 pt-2">
-                <h4 className="text-xs font-bold text-gray-450 uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Phase Parameters
                 </h4>
                 {phases.map((phase, idx) => (
-                  <div key={idx} className="bg-gray-950/80 border border-gray-850/80 p-3.5 rounded-lg space-y-3">
+                  <div key={idx} className="bg-card/90 border border-border/80 p-3.5 rounded-lg space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-blue-400 font-mono">
                         Phase {phase.phaseNumber} Settings
@@ -420,13 +420,13 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           newPhases[idx].phaseName = e.target.value;
                           setPhases(newPhases);
                         }}
-                        className="h-6 px-2 text-[10px] bg-gray-900 border border-gray-800 rounded text-gray-300 w-24 text-right"
+                        className="h-6 px-2 text-[10px] bg-muted border border-border rounded text-foreground/80 w-24 text-right"
                         placeholder="Phase Name"
                       />
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase">Target %</label>
+                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Target %</label>
                         <input
                           type="number"
                           step="0.1"
@@ -436,12 +436,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                             newPhases[idx].profitTarget = e.target.value;
                             setPhases(newPhases);
                           }}
-                          className="w-full h-8 px-2 bg-gray-900 border border-gray-850 rounded text-xs text-gray-350 font-mono"
+                          className="w-full h-8 px-2 bg-muted border border-border rounded text-xs text-gray-350 font-mono"
                           required
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase">Daily DD %</label>
+                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Daily DD %</label>
                         <input
                           type="number"
                           step="0.1"
@@ -451,12 +451,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                             newPhases[idx].dailyDrawdownLimit = e.target.value;
                             setPhases(newPhases);
                           }}
-                          className="w-full h-8 px-2 bg-gray-900 border border-gray-850 rounded text-xs text-gray-350 font-mono"
+                          className="w-full h-8 px-2 bg-muted border border-border rounded text-xs text-gray-350 font-mono"
                           required
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase">Max DD %</label>
+                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Max DD %</label>
                         <input
                           type="number"
                           step="0.1"
@@ -466,7 +466,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                             newPhases[idx].maxDrawdownLimit = e.target.value;
                             setPhases(newPhases);
                           }}
-                          className="w-full h-8 px-2 bg-gray-900 border border-gray-850 rounded text-xs text-gray-350 font-mono"
+                          className="w-full h-8 px-2 bg-muted border border-border rounded text-xs text-gray-350 font-mono"
                           required
                         />
                       </div>
@@ -482,25 +482,25 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               </h3>
 
               {accountType === AccountType.PROP_FUNDED && (
-                <div className="grid grid-cols-2 gap-3 bg-gray-950 p-4 border border-gray-850 rounded-lg">
+                <div className="grid grid-cols-2 gap-3 bg-card p-4 border border-border rounded-lg">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400">Funded Since</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Funded Since</label>
                     <input
                       type="date"
                       value={fundedSince}
                       onChange={(e) => setFundedSince(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-900 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none"
+                      className="w-full h-10 px-3 bg-muted border border-border rounded text-sm text-foreground/80 focus:outline-none"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400">Profit Split (%)</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Profit Split (%)</label>
                     <input
                       type="number"
                       placeholder="e.g. 80"
                       value={profitSplit}
                       onChange={(e) => setProfitSplit(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-900 border border-gray-800 rounded text-sm text-gray-300 focus:outline-none font-mono"
+                      className="w-full h-10 px-3 bg-muted border border-border rounded text-sm text-foreground/80 focus:outline-none font-mono"
                     />
                   </div>
                 </div>
@@ -509,39 +509,39 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400">Max Risk / Trade (%)</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Max Risk / Trade (%)</label>
                     <input
                       type="number"
                       step="0.01"
                       placeholder="e.g. 1.0"
                       value={maxRiskPerTrade}
                       onChange={(e) => setMaxRiskPerTrade(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400">Max Trades / Day</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Max Trades / Day</label>
                     <input
                       type="number"
                       placeholder="e.g. 5"
                       value={maxTradesPerDay}
                       onChange={(e) => setMaxTradesPerDay(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-450 uppercase">Max Daily Drawdown (%)</label>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase">Max Daily Drawdown (%)</label>
                     <input
                       type="number"
                       step="0.01"
                       placeholder="e.g. 5.0"
                       value={maxDailyDrawdown}
                       onChange={(e) => setMaxDailyDrawdown(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-350 focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-gray-350 focus:outline-none focus:border-blue-500 font-mono"
                     />
                   </div>
 
@@ -553,12 +553,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                       placeholder="e.g. 10.0"
                       value={maxOverallDrawdown}
                       onChange={(e) => setMaxOverallDrawdown(e.target.value)}
-                      className="w-full h-10 px-3 bg-gray-950 border border-gray-850 rounded text-sm text-gray-355 focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full h-10 px-3 bg-card border border-border rounded text-sm text-gray-355 focus:outline-none focus:border-blue-500 font-mono"
                     />
                   </div>
                 </div>
 
-                <div className="pt-2 text-[11px] text-gray-500 leading-relaxed">
+                <div className="pt-2 text-[11px] text-muted-foreground leading-relaxed">
                   * Daily Drawdown is computed dynamically based on the starting equity of each day. Overall Drawdown compares current equity to the initial starting account balance.
                 </div>
               </div>
@@ -567,11 +567,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-3 border-t border-gray-900">
+      <div className="flex justify-end gap-3 pt-3 border-t border-border">
         <button
           type="button"
           onClick={onCancel}
-          className="px-5 h-10 border border-gray-800 hover:bg-gray-900 rounded text-xs font-semibold text-gray-400 hover:text-white transition"
+          className="px-5 h-10 border border-border hover:bg-muted rounded text-xs font-semibold text-muted-foreground hover:text-white transition"
         >
           Cancel
         </button>

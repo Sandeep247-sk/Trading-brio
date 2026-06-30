@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useChartTheme } from "./use-chart-theme";
 
 interface SessionData {
   session: string;
@@ -35,24 +36,31 @@ const formatCurrency = (val: number, currency = "USD") => {
   return `${val >= 0 ? "+" : "-"}${symbol}${Math.abs(val).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 };
 
-const CustomTooltip = ({ active, payload, currency }: any) => {
+function ChartTooltip({ active, payload, currency, theme }: any) {
   if (!active || !payload?.length) return null;
   const data = payload[0].payload;
   return (
-    <div className="bg-gray-950/95 border border-gray-800 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm space-y-0.5">
-      <p className="text-[11px] font-bold text-gray-200">{data.session}</p>
-      <p className="text-[10px] text-gray-500">
-        Trades: <span className="text-gray-300 font-mono">{data.trades}</span> ({data.percentage.toFixed(1)}%)
+    <div
+      className="rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm space-y-0.5"
+      style={{
+        background: theme.tooltipBg,
+        border: `1px solid ${theme.tooltipBorder}`,
+        color: theme.tooltipText,
+      }}
+    >
+      <p className="text-[11px] font-bold" style={{ color: theme.tooltipText }}>{data.session}</p>
+      <p className="text-[10px]" style={{ color: theme.tooltipMuted }}>
+        Trades: <span className="font-mono" style={{ color: theme.tooltipText }}>{data.trades}</span> ({data.percentage.toFixed(1)}%)
       </p>
-      <p className="text-[10px] text-gray-500">
-        Win Rate: <span className="text-green-400 font-mono">{data.winRate.toFixed(1)}%</span>
+      <p className="text-[10px]" style={{ color: theme.tooltipMuted }}>
+        Win Rate: <span className="text-green-500 font-mono">{data.winRate.toFixed(1)}%</span>
       </p>
-      <p className={`text-[10px] font-mono font-bold ${data.pnl >= 0 ? "text-green-400" : "text-red-400"}`}>
+      <p className={`text-[10px] font-mono font-bold ${data.pnl >= 0 ? "text-green-500" : "text-red-500"}`}>
         {formatCurrency(data.pnl, currency)}
       </p>
     </div>
   );
-};
+}
 
 const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
   if (percent < 0.05) return null; // Don't render labels for tiny slices
@@ -69,10 +77,12 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 };
 
 export function SessionPieChart({ data, currency = "USD" }: SessionPieChartProps) {
+  const theme = useChartTheme();
+
   const hasData = data.some((d) => d.trades > 0);
   if (!hasData) {
     return (
-      <div className="flex items-center justify-center h-[280px] text-gray-500 text-xs">
+      <div className="flex items-center justify-center h-[280px] text-muted-foreground text-xs">
         No session data to display
       </div>
     );
@@ -94,13 +104,13 @@ export function SessionPieChart({ data, currency = "USD" }: SessionPieChartProps
           fill="#8884d8"
           dataKey="trades"
           strokeWidth={2}
-          stroke="#0f1419"
+          stroke={theme.pieStroke}
         >
           {activeData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip content={<CustomTooltip currency={currency} />} />
+        <Tooltip content={<ChartTooltip currency={currency} theme={theme} />} />
         <Legend
           verticalAlign="bottom"
           height={36}
@@ -109,7 +119,7 @@ export function SessionPieChart({ data, currency = "USD" }: SessionPieChartProps
               {payload?.map((entry: any, index: number) => (
                 <div key={`legend-${index}`} className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                  <span className="text-[10px] text-gray-400 font-medium">{entry.value}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{entry.value}</span>
                 </div>
               ))}
             </div>

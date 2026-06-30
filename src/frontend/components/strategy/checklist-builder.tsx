@@ -131,9 +131,9 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
   };
 
   return (
-    <div className="border border-gray-800 bg-gray-950 rounded-lg overflow-hidden flex flex-col md:flex-row min-h-[480px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col md:flex-row min-h-[480px]">
       {/* Category Sidebar */}
-      <div className="md:w-64 border-b md:border-b-0 md:border-r border-gray-800 bg-gray-900/20 p-2 flex flex-row md:flex-col space-x-1 md:space-x-0 md:space-y-1 overflow-x-auto md:overflow-x-visible shrink-0">
+      <div className="md:w-64 border-b md:border-b-0 md:border-r border-border bg-muted/20 p-2 flex flex-row md:flex-col space-x-1 md:space-x-0 md:space-y-1 overflow-x-auto md:overflow-x-visible shrink-0">
         {CATEGORIES.map((cat) => {
           const count = rules.filter((r) => r.category === cat.value).length;
           return (
@@ -144,12 +144,12 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
               className={`flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-md transition text-left whitespace-nowrap md:whitespace-normal shrink-0 md:shrink ${
                 activeTab === cat.value
                   ? "bg-blue-600/10 border border-blue-500/50 text-blue-400"
-                  : "text-gray-400 hover:text-gray-200 hover:bg-gray-900"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               <span>{cat.label}</span>
               {count > 0 && (
-                <span className="ml-2 px-1.5 py-0.5 bg-gray-800 border border-gray-700 text-gray-400 text-[10px] rounded font-mono shrink-0">
+                <span className="ml-2 px-1.5 py-0.5 bg-muted border border-border text-muted-foreground text-[10px] rounded font-mono shrink-0">
                   {count}
                 </span>
               )}
@@ -162,18 +162,18 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
       <div className="flex-1 p-6 space-y-6 flex flex-col justify-between">
         <div className="space-y-4">
           <div>
-            <h4 className="text-sm font-semibold text-gray-200">
+            <h4 className="text-sm font-semibold text-foreground">
               {CATEGORIES.find((c) => c.value === activeTab)?.label}
             </h4>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {CATEGORIES.find((c) => c.value === activeTab)?.desc}
             </p>
           </div>
 
           {activeRules.length === 0 ? (
-            <div className="flex flex-col items-center justify-center border border-dashed border-gray-850 p-10 rounded-md bg-gray-900/10">
-              <ShieldAlert className="h-6 w-6 text-gray-600 mb-2" />
-              <p className="text-xs text-gray-400">No rules added to this category yet.</p>
+            <div className="flex flex-col items-center justify-center border border-dashed border-border p-10 rounded-md bg-muted/10">
+              <ShieldAlert className="h-6 w-6 text-muted-foreground/60 mb-2" />
+              <p className="text-xs text-muted-foreground">No rules added to this category yet.</p>
               <button
                 type="button"
                 onClick={addRule}
@@ -187,7 +187,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
               {activeRules.map((rule, idx) => (
                 <div
                   key={rule.id}
-                  className="flex items-start gap-3 border border-gray-850 bg-gray-900/20 p-3 rounded-md group hover:border-gray-800 transition"
+                  className="flex items-start gap-3 border border-border bg-muted/20 p-3 rounded-md group hover:border-border transition"
                 >
                   {/* Order controls */}
                   <div className="flex flex-col space-y-1 text-gray-650 shrink-0">
@@ -195,7 +195,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                       type="button"
                       disabled={idx === 0}
                       onClick={() => moveRule(idx, "up")}
-                      className="p-0.5 hover:text-gray-300 disabled:opacity-20 transition"
+                      className="p-0.5 hover:text-foreground/80 disabled:opacity-20 transition"
                     >
                       <ArrowUp className="h-3.5 w-3.5" />
                     </button>
@@ -203,7 +203,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                       type="button"
                       disabled={idx === activeRules.length - 1}
                       onClick={() => moveRule(idx, "down")}
-                      className="p-0.5 hover:text-gray-300 disabled:opacity-20 transition"
+                      className="p-0.5 hover:text-foreground/80 disabled:opacity-20 transition"
                     >
                       <ArrowDown className="h-3.5 w-3.5" />
                     </button>
@@ -217,7 +217,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                         placeholder="Rule Name (e.g. Liquidity swept)"
                         value={rule.name}
                         onChange={(e) => updateRuleField(rule.id!, "name", e.target.value)}
-                        className="w-full text-xs bg-gray-950 border border-gray-800 rounded px-2.5 py-1.5 text-gray-300 focus:outline-none focus:border-blue-500 font-medium"
+                        className="w-full text-xs bg-card border border-border rounded px-2.5 py-1.5 text-foreground/80 focus:outline-none focus:border-blue-500 font-medium"
                       />
                     </div>
                     <div className="sm:col-span-5 space-y-1">
@@ -226,11 +226,11 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                         placeholder="Optional details / help note"
                         value={rule.description || ""}
                         onChange={(e) => updateRuleField(rule.id!, "description", e.target.value)}
-                        className="w-full text-xs bg-gray-950 border border-gray-800 rounded px-2.5 py-1.5 text-gray-300 focus:outline-none focus:border-blue-500 text-gray-400"
+                        className="w-full text-xs bg-card border border-border rounded px-2.5 py-1.5 text-foreground/80 focus:outline-none focus:border-blue-500 text-muted-foreground"
                       />
                     </div>
                     <div className="sm:col-span-2 flex items-center justify-between sm:justify-center gap-2">
-                      <label className="text-[10px] uppercase font-semibold text-gray-500 sm:hidden">
+                      <label className="text-[10px] uppercase font-semibold text-muted-foreground sm:hidden">
                         Required
                       </label>
                       <button
@@ -239,7 +239,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                         className={`px-2 py-1 text-[10px] font-bold rounded border uppercase tracking-wider transition ${
                           rule.isRequired
                             ? "bg-red-500/10 border-red-500/30 text-red-400"
-                            : "bg-gray-800/40 border-gray-750 text-gray-500"
+                            : "bg-muted/40 border-gray-750 text-muted-foreground"
                         }`}
                       >
                         {rule.isRequired ? "Required" : "Optional"}
@@ -251,7 +251,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
                   <button
                     type="button"
                     onClick={() => removeRule(rule.id!)}
-                    className="p-1.5 bg-gray-900/60 text-gray-500 hover:text-red-400 hover:bg-red-950/20 border border-gray-800 hover:border-red-900/50 rounded transition"
+                    className="p-1.5 bg-muted/60 text-muted-foreground hover:text-red-400 hover:bg-red-950/20 border border-border hover:border-red-900/50 rounded transition"
                   >
                     <Trash className="h-3.5 w-3.5" />
                   </button>
@@ -262,7 +262,7 @@ export const ChecklistBuilder: React.FC<ChecklistBuilderProps> = ({
         </div>
 
         {activeRules.length > 0 && (
-          <div className="pt-4 border-t border-gray-900 flex justify-end">
+          <div className="pt-4 border-t border-border flex justify-end">
             <button
               type="button"
               onClick={addRule}

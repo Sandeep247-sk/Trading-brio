@@ -106,12 +106,12 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Welcome header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-900 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-150 sm:text-2xl">
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             Terminal Overview — <span className="text-blue-500">{metrics.accountInfo.name}</span>
           </h1>
-          <p className="text-xs text-gray-500 mt-1 font-mono uppercase">
+          <p className="text-xs text-muted-foreground mt-1 font-mono uppercase">
             Broker: {metrics.accountInfo.brokerName || "None"} • Type: {metrics.accountInfo.accountType ? metrics.accountInfo.accountType.replace(/_/g, " ") : "LIVE"} • Platform: {metrics.accountInfo.platform || "OTHER"}
           </p>
         </div>
@@ -168,28 +168,28 @@ export default async function DashboardPage() {
       {/* Trading Stats + Session Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Trading Statistics */}
-        <Card className="lg:col-span-2 bg-card/85 border-gray-850">
+        <Card className="lg:col-span-2 bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Activity className="h-4 w-4 text-blue-500" />
               Trading Statistics
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">Key performance metrics</CardDescription>
+            <CardDescription className="text-xs text-muted-foreground">Key performance metrics</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { label: "Win Rate", value: `${stats.winRate.toFixed(1)}%`, color: "text-green-400" },
-                { label: "Loss Rate", value: `${stats.lossRate.toFixed(1)}%`, color: "text-red-400" },
-                { label: "Avg RR", value: `${stats.avgRR.toFixed(2)}R`, color: "text-blue-400 font-mono" },
-                { label: "Profit Factor", value: stats.profitFactor === null || stats.profitFactor === undefined || stats.profitFactor === Infinity ? "∞" : Number(stats.profitFactor).toFixed(2), color: "text-gray-300 font-mono" },
-                { label: "Best Trade", value: `+${formatVal(stats.bestTrade)}`, color: "text-green-450 font-mono" },
-                { label: "Worst Trade", value: `-${formatVal(Math.abs(stats.worstTrade))}`, color: "text-red-450 font-mono" },
-                { label: "Starting Balance", value: formatVal(stats.startingBalance), color: "text-gray-400 font-mono" },
-                { label: "Total Trades", value: String(stats.totalTrades), color: "text-gray-300 font-mono" },
+                { label: "Win Rate", value: `${stats.winRate.toFixed(1)}%`, color: "text-green-500" },
+                { label: "Loss Rate", value: `${stats.lossRate.toFixed(1)}%`, color: "text-red-500" },
+                { label: "Avg RR", value: `${stats.avgRR.toFixed(2)}R`, color: "text-blue-500 font-mono" },
+                { label: "Profit Factor", value: stats.profitFactor === null || stats.profitFactor === undefined || stats.profitFactor === Infinity ? "∞" : Number(stats.profitFactor).toFixed(2), color: "text-foreground font-mono" },
+                { label: "Best Trade", value: `+${formatVal(stats.bestTrade)}`, color: "text-green-500 font-mono" },
+                { label: "Worst Trade", value: `-${formatVal(Math.abs(stats.worstTrade))}`, color: "text-red-500 font-mono" },
+                { label: "Starting Balance", value: formatVal(stats.startingBalance), color: "text-muted-foreground font-mono" },
+                { label: "Total Trades", value: String(stats.totalTrades), color: "text-foreground font-mono" },
               ].map((stat) => (
-                <div key={stat.label} className="space-y-1 p-3 rounded-lg bg-gray-900/30 border border-gray-900">
-                  <p className="text-[10px] text-gray-550 font-semibold uppercase tracking-wider">{stat.label}</p>
+                <div key={stat.label} className="space-y-1 p-3 rounded-lg bg-muted/30 border border-border">
+                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{stat.label}</p>
                   <p className={`text-sm sm:text-base font-bold ${stat.color}`}>
                     {stat.value}
                   </p>
@@ -200,9 +200,9 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Session Analytics */}
-        <Card className="bg-card/85 border-gray-850">
+        <Card className="bg-card/85 border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Zap className="h-4 w-4 text-blue-500" />
               Session Performance
             </CardTitle>
@@ -213,19 +213,19 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${session.color}`} />
-                    <span className="text-xs sm:text-sm font-semibold text-gray-300">{session.name}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-foreground">{session.name}</span>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] bg-gray-900 border-gray-850 text-gray-400">
+                  <Badge variant="secondary" className="text-[10px]">
                     {session.trades} trades
                   </Badge>
                 </div>
-                <div className="flex items-center gap-3 text-[10px] text-gray-500">
-                  <span>WR: <span className="text-green-400 font-bold font-mono">{session.winRate}%</span></span>
-                  <span>P&L: <span className={`font-bold font-mono ${session.pnl >= 0 ? "text-green-400" : "text-red-400"}`}>
+                <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                  <span>WR: <span className="text-green-500 font-bold font-mono">{session.winRate}%</span></span>
+                  <span>P&L: <span className={`font-bold font-mono ${session.pnl >= 0 ? "text-green-500" : "text-red-500"}`}>
                     {session.pnl >= 0 ? "+" : ""}{formatVal(session.pnl)}
                   </span></span>
                 </div>
-                <div className="w-full bg-gray-900 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`h-full rounded-full ${session.color} transition-all duration-500`}
                     style={{ width: `${session.winRate}%` }}
@@ -238,16 +238,16 @@ export default async function DashboardPage() {
       </div>
 
       {/* Mini Equity Curve */}
-      <Card className="bg-card/85 border-gray-850">
+      <Card className="bg-card/85 border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-200">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <TrendingUp className="h-4 w-4 text-blue-500" />
               Equity Curve
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500">Balance progression</CardDescription>
+            <CardDescription className="text-xs text-muted-foreground">Balance progression</CardDescription>
           </div>
-          <Link href="/analytics" className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition">
+          <Link href="/analytics" className="text-xs font-semibold text-blue-500 hover:text-blue-400 transition">
             Full Analytics
           </Link>
         </CardHeader>
@@ -257,20 +257,20 @@ export default async function DashboardPage() {
       </Card>
 
       {/* Recent Trades Table */}
-      <Card className="bg-card/85 border-gray-850">
+      <Card className="bg-card/85 border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-sm font-semibold text-gray-200">Recent Trades</CardTitle>
-            <CardDescription className="text-xs text-gray-500">Your latest trading activity</CardDescription>
+            <CardTitle className="text-sm font-semibold text-foreground">Recent Trades</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">Your latest trading activity</CardDescription>
           </div>
-          <Link href="/journal" className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition">
+          <Link href="/journal" className="text-xs font-semibold text-blue-500 hover:text-blue-400 transition">
             View Journal
           </Link>
         </CardHeader>
         <CardContent>
           {recentTrades.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 No trades logged yet. Start by{" "}
                 <Link href="/journal/new" className="text-blue-500 hover:underline font-semibold">
                   adding your first trade
@@ -282,7 +282,7 @@ export default async function DashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-gray-900 text-gray-500 font-bold uppercase tracking-wider">
+                  <tr className="border-b border-border text-muted-foreground font-bold uppercase tracking-wider">
                     <th className="py-2.5 px-3">Pair</th>
                     <th className="py-2.5 px-3">Direction</th>
                     <th className="py-2.5 px-3">Session</th>
@@ -292,46 +292,46 @@ export default async function DashboardPage() {
                     <th className="py-2.5 px-3">Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-900 text-gray-300">
+                <tbody className="divide-y divide-border text-foreground">
                   {recentTrades.map((t) => {
                     const isWin = t.result === "WIN";
                     const isLoss = t.result === "LOSS";
                     const isPending = !t.result;
                     const tradePnl = t.pnl ? Number(t.pnl) : 0;
                     return (
-                      <tr key={t.id} className="hover:bg-gray-900/10 transition">
-                        <td className="py-3 px-3 font-semibold text-gray-200">{t.pair}</td>
+                      <tr key={t.id} className="hover:bg-muted/30 transition">
+                        <td className="py-3 px-3 font-semibold text-foreground">{t.pair}</td>
                         <td className="py-3 px-3">
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${
                             t.direction === "LONG" 
-                              ? "bg-green-600/10 text-green-400" 
-                              : "bg-red-600/10 text-red-400"
+                              ? "bg-green-600/10 text-green-500" 
+                              : "bg-red-600/10 text-red-500"
                           }`}>
                             {t.direction}
                           </span>
                         </td>
-                        <td className="py-3 px-3 uppercase text-gray-400">{t.session.replace(/_/g, " ")}</td>
+                        <td className="py-3 px-3 uppercase text-muted-foreground">{t.session.replace(/_/g, " ")}</td>
                         <td className="py-3 px-3">
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${
                             isWin 
-                              ? "bg-green-600/10 text-green-400 border border-green-500/20" 
+                              ? "bg-green-600/10 text-green-500 border border-green-500/20" 
                               : isLoss 
-                              ? "bg-red-600/10 text-red-400 border border-red-500/20"
-                              : "bg-gray-800/30 text-gray-450"
+                              ? "bg-red-600/10 text-red-500 border border-red-500/20"
+                              : "bg-muted/50 text-muted-foreground"
                           }`}>
                             {t.result || "PENDING"}
                           </span>
                         </td>
                         <td className={`py-3 px-3 font-bold font-mono ${
-                          tradePnl > 0 ? "text-green-450" : tradePnl < 0 ? "text-red-450" : "text-gray-400"
+                          tradePnl > 0 ? "text-green-500" : tradePnl < 0 ? "text-red-500" : "text-muted-foreground"
                         }`}>
                           {tradePnl > 0 ? "+" : ""}
                           {tradePnl !== 0 ? formatVal(tradePnl) : "—"}
                         </td>
-                        <td className="py-3 px-3 font-mono text-gray-400">
+                        <td className="py-3 px-3 font-mono text-muted-foreground">
                           {t.rrAchieved !== null ? `${Number(t.rrAchieved).toFixed(2)} R` : "—"}
                         </td>
-                        <td className="py-3 px-3 text-gray-500">
+                        <td className="py-3 px-3 text-muted-foreground">
                           {new Date(t.date).toLocaleDateString()}
                         </td>
                       </tr>

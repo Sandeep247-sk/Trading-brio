@@ -205,17 +205,17 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left column - Strategy & Core settings */}
-        <div className="md:col-span-2 space-y-6 bg-gray-900/40 p-6 border border-gray-800 rounded-lg">
-          <h3 className="text-base font-semibold text-gray-200">Execution Parameters</h3>
+        <div className="md:col-span-2 space-y-6 bg-muted/40 p-6 border border-border rounded-lg">
+          <h3 className="text-base font-semibold text-foreground">Execution Parameters</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Strategy Select */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Strategy
               </label>
               {loadingStrategies ? (
-                <div className="h-10 bg-gray-950 border border-gray-800 rounded-md animate-pulse" />
+                <div className="h-10 bg-card border border-border rounded-md animate-pulse" />
               ) : strategies.length === 0 ? (
                 <div className="text-xs text-amber-500 flex items-center gap-1.5 border border-amber-950/50 bg-amber-950/10 p-3 rounded-md">
                   <Info className="h-4 w-4 shrink-0" />
@@ -225,7 +225,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                 <select
                   value={strategyVersionId}
                   onChange={(e) => setStrategyVersionId(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
                 >
                   {strategies.map((opt) => (
                     <option key={opt.id} value={opt.id}>
@@ -238,13 +238,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
 
             {/* Pair Select */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Trading Pair
               </label>
               <select
                 value={pair}
                 onChange={(e) => setPair(e.target.value)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
               >
                 {TRADING_PAIRS.map((p) => (
                   <option key={p} value={p}>
@@ -256,26 +256,26 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
 
             {/* Date Picker */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Execution Date & Time
               </label>
               <input
                 type="datetime-local"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
               />
             </div>
 
             {/* Trading Session */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Session
               </label>
               <select
                 value={sessionVal}
                 onChange={(e) => setSessionVal(e.target.value as TradingSession)}
-                className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+                className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
               >
                 <option value={TradingSession.LONDON}>London</option>
                 <option value={TradingSession.NEW_YORK}>New York</option>
@@ -288,7 +288,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             {/* Direction LONG / SHORT */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
                 Direction
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -298,7 +298,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   className={`h-10 text-sm font-semibold rounded-md border transition ${
                     direction === Direction.LONG
                       ? "bg-blue-600/10 border-blue-500 text-blue-400"
-                      : "bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-700"
+                      : "bg-card border-border text-muted-foreground hover:border-border"
                   }`}
                 >
                   Buy / Long
@@ -309,7 +309,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   className={`h-10 text-sm font-semibold rounded-md border transition ${
                     direction === Direction.SHORT
                       ? "bg-red-600/10 border-red-500 text-red-400"
-                      : "bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-700"
+                      : "bg-card border-border text-muted-foreground hover:border-border"
                   }`}
                 >
                   Sell / Short
@@ -319,7 +319,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
 
             {/* Risk Percent */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
                 Risk Percent (%)
               </label>
               <div className="relative">
@@ -331,9 +331,9 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   placeholder="1.0"
                   value={riskPercent}
                   onChange={(e) => setRiskPercent(e.target.value)}
-                  className="w-full h-10 pl-3 pr-8 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full h-10 pl-3 pr-8 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-gray-500 font-mono">
+                <span className="absolute right-3 top-2.5 text-xs text-muted-foreground font-mono">
                   %
                 </span>
               </div>
@@ -342,13 +342,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
         </div>
 
         {/* Right column - Price entry & live math */}
-        <div className="space-y-6 bg-gray-900/40 p-6 border border-gray-800 rounded-lg flex flex-col justify-between">
+        <div className="space-y-6 bg-muted/40 p-6 border border-border rounded-lg flex flex-col justify-between">
           <div>
-            <h3 className="text-base font-semibold text-gray-200 mb-4">Price Levels</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">Price Levels</h3>
             <div className="space-y-4">
               {/* Entry Price */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Entry Price
                 </label>
                 <input
@@ -357,13 +357,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   placeholder="0.00"
                   value={entryPrice}
                   onChange={(e) => setEntryPrice(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
 
               {/* Stop Loss */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Stop Loss
                 </label>
                 <input
@@ -372,13 +372,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   placeholder="0.00"
                   value={stopLoss}
                   onChange={(e) => setStopLoss(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
 
               {/* Take Profit */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Take Profit
                 </label>
                 <input
@@ -387,16 +387,16 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                   placeholder="0.00"
                   value={takeProfit}
                   onChange={(e) => setTakeProfit(e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
             </div>
           </div>
 
           {/* Planned Risk to Reward Display */}
-          <div className="mt-4 pt-4 border-t border-gray-800/85">
-            <div className="flex justify-between items-center bg-gray-950 border border-gray-800 p-3.5 rounded-md">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <div className="mt-4 pt-4 border-t border-border/85">
+            <div className="flex justify-between items-center bg-card border border-border p-3.5 rounded-md">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Planned RR Ratio
               </span>
               <span className="text-sm font-bold text-blue-500 font-mono">
@@ -408,19 +408,19 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
       </div>
 
       {/* Outcome Section */}
-      <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg space-y-6">
-        <h3 className="text-base font-semibold text-gray-200">Outcome & P&L (Optional for open trades)</h3>
+      <div className="bg-muted/40 p-6 border border-border rounded-lg space-y-6">
+        <h3 className="text-base font-semibold text-foreground">Outcome & P&L (Optional for open trades)</h3>
         
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Result */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
               Result
             </label>
             <select
               value={result}
               onChange={(e) => setResult(e.target.value as any)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+              className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
             >
               <option value="PENDING">Pending / Open</option>
               <option value="WIN">Win</option>
@@ -431,7 +431,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
 
           {/* PNL in currency */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Profit / Loss ($)
             </label>
             <input
@@ -441,13 +441,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
               value={pnl}
               disabled={result === "PENDING"}
               onChange={(e) => setPnl(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-mono"
+              className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-mono"
             />
           </div>
 
           {/* RR Achieved */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               RR Achieved
             </label>
             <input
@@ -457,30 +457,30 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
               value={rrAchieved}
               disabled={result === "PENDING"}
               onChange={(e) => setRrAchieved(e.target.value)}
-              className="w-full h-10 px-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-mono"
+              className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-mono"
             />
           </div>
         </div>
       </div>
 
       {/* Screenshots Section */}
-      <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg">
+      <div className="bg-muted/40 p-6 border border-border rounded-lg">
         <ScreenshotUpload onFilesChange={setScreenshots} />
 
         {isEdit && initialData.images?.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-800">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">Saved Screenshots</h4>
+          <div className="mt-6 pt-6 border-t border-border">
+            <h4 className="text-sm font-semibold text-foreground/80 mb-3">Saved Screenshots</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {initialData.images.map((img: any) => {
                 const isDeleted = deleteImageIds.includes(img.id);
                 return (
                   <div
                     key={img.id}
-                    className={`relative border border-gray-800 bg-gray-950 rounded-md p-2 flex flex-col space-y-2 transition ${
+                    className={`relative border border-border bg-card rounded-md p-2 flex flex-col space-y-2 transition ${
                       isDeleted ? "opacity-30 line-through" : ""
                     }`}
                   >
-                    <div className="relative aspect-video w-full rounded overflow-hidden bg-gray-900">
+                    <div className="relative aspect-video w-full rounded overflow-hidden bg-muted">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={img.url}
@@ -503,7 +503,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
                         {isDeleted ? <span className="text-xs px-1">Restore</span> : <X className="h-3.5 w-3.5" />}
                       </button>
                     </div>
-                    <span className="text-[10px] text-gray-500 font-mono uppercase">
+                    <span className="text-[10px] text-muted-foreground font-mono uppercase">
                       {img.type.replace(/_/g, " ")}
                     </span>
                   </div>
@@ -515,8 +515,8 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
       </div>
 
       {/* Notes Section */}
-      <div className="bg-gray-900/40 p-6 border border-gray-800 rounded-lg space-y-2">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      <div className="bg-muted/40 p-6 border border-border rounded-lg space-y-2">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Trade Notes & Thoughts
         </label>
         <textarea
@@ -524,7 +524,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
           placeholder="Describe why you took this setup, what confluences were checked, state of mind during execution, exit management..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full p-3 bg-gray-950 border border-gray-800 rounded-md text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+          className="w-full p-3 bg-card border border-border rounded-md text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
         />
       </div>
 
@@ -533,7 +533,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({ initialData }) => {
         <button
           type="button"
           onClick={() => router.push("/journal")}
-          className="px-5 h-11 border border-gray-800 rounded-md text-sm text-gray-400 hover:text-white hover:bg-gray-900 transition"
+          className="px-5 h-11 border border-border rounded-md text-sm text-muted-foreground hover:text-white hover:bg-muted transition"
         >
           Cancel
         </button>

@@ -44,7 +44,7 @@ export const StrategyActions: React.FC<StrategyActionsProps> = ({ strategyId }) 
     <div className="flex items-center space-x-2 shrink-0">
       <Link
         href={`/strategy?action=edit&id=${strategyId}`}
-        className="px-2.5 py-1.5 bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded text-xs font-semibold inline-flex items-center gap-1 transition"
+        className="px-2.5 py-1.5 bg-muted border border-border hover:border-border text-foreground/80 hover:text-white rounded text-xs font-semibold inline-flex items-center gap-1 transition"
       >
         <Edit className="h-3.5 w-3.5" />
         Edit Rules
@@ -75,7 +75,7 @@ export const StrategyActions: React.FC<StrategyActionsProps> = ({ strategyId }) 
           <button
             type="button"
             onClick={() => setShowConfirm(false)}
-            className="px-1.5 py-0.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-[10px] font-bold transition flex items-center gap-0.5"
+            className="px-1.5 py-0.5 bg-muted hover:bg-gray-700 text-foreground/80 rounded text-[10px] font-bold transition flex items-center gap-0.5"
           >
             <X className="h-3 w-3" />
           </button>

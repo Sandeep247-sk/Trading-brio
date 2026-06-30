@@ -54,7 +54,7 @@
 }
 
 /* ============================================================
-   TRADER BRIO — Dark Terminal Theme
+   TRADER BRIO — Dark Terminal Theme (Default)
    Background: #0B0F19 | Surface: #111827 | Border: #1F2937
    Primary: #3B82F6 | Success: #22C55E | Danger: #EF4444
    ============================================================ */
@@ -98,40 +98,117 @@
   --sidebar-accent-foreground: #F1F5F9;
   --sidebar-border: #1F2937;
   --sidebar-ring: #3B82F6;
+
+  /* Chart / tooltip / glass theme tokens */
+  --chart-grid: #1a1f2e;
+  --chart-tick: #6b7280;
+  --chart-axis: #1a1f2e;
+  --chart-reference: #374151;
+  --tooltip-bg: rgba(10, 14, 25, 0.95);
+  --tooltip-border: #1f2937;
+  --tooltip-text: #e2e8f0;
+  --tooltip-muted: #6b7280;
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-border: rgba(31, 41, 55, 0.6);
+  --glass-premium-bg: rgba(5, 11, 24, 0.85);
+  --glass-premium-border: rgba(59, 130, 246, 0.12);
+  --glass-premium-shadow: 0 0 30px rgba(59,130,246,0.06), 0 4px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  --scrollbar-thumb: #1F2937;
+  --scrollbar-thumb-hover: #374151;
+  --result-card-bg: rgba(5, 11, 24, 0.6);
+  --result-card-border: rgba(59, 130, 246, 0.15);
+  --calc-input-bg: rgba(5, 11, 24, 0.6);
+  --calc-input-border: rgba(31, 41, 55, 0.6);
+  --quick-risk-bg: rgba(59, 130, 246, 0.08);
+  --quick-risk-border: rgba(59, 130, 246, 0.15);
+  --quick-risk-text: rgba(148, 163, 184, 0.8);
+  --quick-risk-hover-bg: rgba(59, 130, 246, 0.15);
+  --quick-risk-hover-border: rgba(59, 130, 246, 0.3);
+  --quick-risk-hover-text: #93c5fd;
+  --quick-risk-active-bg: rgba(59, 130, 246, 0.2);
+  --quick-risk-active-border: rgba(59, 130, 246, 0.5);
+  --quick-risk-active-text: #60a5fa;
+  --pie-stroke: #0f1419;
+  --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --stat-bg: rgba(17, 24, 39, 0.3);
+  --stat-border: #111827;
 }
 
-/* Light theme override (optional, keeping as fallback) */
+/* ============================================================
+   Light Theme
+   Elegant trading workspace with white/gray backgrounds,
+   soft shadows, and Trading Brio accent branding.
+   ============================================================ */
 .light {
   --background: #F8FAFC;
-  --foreground: #0F172A;
+  --foreground: #111827;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #111827;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --primary: #3B82F6;
+  --popover-foreground: #111827;
+  --primary: #2563EB;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
+  --secondary-foreground: #111827;
   --muted: #F1F5F9;
-  --muted-foreground: #64748B;
+  --muted-foreground: #6B7280;
   --accent: #F1F5F9;
-  --accent-foreground: #0F172A;
-  --destructive: #EF4444;
-  --success: #22C55E;
+  --accent-foreground: #111827;
+  --destructive: #DC2626;
+  --success: #16A34A;
   --success-foreground: #FFFFFF;
-  --warning: #F59E0B;
+  --warning: #D97706;
   --warning-foreground: #FFFFFF;
   --border: #E2E8F0;
   --input: #E2E8F0;
-  --ring: #3B82F6;
+  --ring: #2563EB;
+  --chart-1: #2563EB;
+  --chart-2: #16A34A;
+  --chart-3: #D97706;
+  --chart-4: #DC2626;
+  --chart-5: #7C3AED;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #0F172A;
-  --sidebar-primary: #3B82F6;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #2563EB;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #0F172A;
+  --sidebar-accent-foreground: #111827;
   --sidebar-border: #E2E8F0;
-  --sidebar-ring: #3B82F6;
+  --sidebar-ring: #2563EB;
+
+  /* Chart / tooltip / glass theme tokens */
+  --chart-grid: #E5E7EB;
+  --chart-tick: #6B7280;
+  --chart-axis: #E5E7EB;
+  --chart-reference: #D1D5DB;
+  --tooltip-bg: rgba(255, 255, 255, 0.97);
+  --tooltip-border: #E2E8F0;
+  --tooltip-text: #111827;
+  --tooltip-muted: #6B7280;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --glass-premium-bg: rgba(255, 255, 255, 0.92);
+  --glass-premium-border: rgba(37, 99, 235, 0.12);
+  --glass-premium-shadow: 0 0 30px rgba(37,99,235,0.04), 0 4px 30px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+  --result-card-bg: rgba(248, 250, 252, 0.8);
+  --result-card-border: rgba(37, 99, 235, 0.12);
+  --calc-input-bg: rgba(248, 250, 252, 0.9);
+  --calc-input-border: rgba(226, 232, 240, 0.8);
+  --quick-risk-bg: rgba(37, 99, 235, 0.06);
+  --quick-risk-border: rgba(37, 99, 235, 0.12);
+  --quick-risk-text: #6B7280;
+  --quick-risk-hover-bg: rgba(37, 99, 235, 0.10);
+  --quick-risk-hover-border: rgba(37, 99, 235, 0.25);
+  --quick-risk-hover-text: #2563EB;
+  --quick-risk-active-bg: rgba(37, 99, 235, 0.12);
+  --quick-risk-active-border: rgba(37, 99, 235, 0.40);
+  --quick-risk-active-text: #1D4ED8;
+  --pie-stroke: #FFFFFF;
+  --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  --stat-bg: rgba(241, 245, 249, 0.6);
+  --stat-border: #E2E8F0;
 }
 
 @layer base {
@@ -151,15 +228,25 @@
 }
 
 /* ============================================================
+   Theme Transition — smooth 300ms crossfade on theme switch
+   ============================================================ */
+html.transitioning,
+html.transitioning *,
+html.transitioning *::before,
+html.transitioning *::after {
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease, box-shadow 300ms ease, fill 300ms ease, stroke 300ms ease !important;
+}
+
+/* ============================================================
    Custom Utilities
    ============================================================ */
 
 /* Glassmorphism card */
 .glass-card {
-  background: rgba(17, 24, 39, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(31, 41, 55, 0.6);
+  border: 1px solid var(--glass-border);
 }
 
 /* Gradient text */
@@ -190,7 +277,7 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--card-hover-shadow);
 }
 
 /* Stat card pulse animation for live data */
@@ -264,12 +351,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F2937;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Number font */
@@ -313,14 +400,11 @@
 
 /* Premium glassmorphism card */
 .glass-card-premium {
-  background: rgba(5, 11, 24, 0.85);
+  background: var(--glass-premium-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  box-shadow:
-    0 0 30px rgba(59, 130, 246, 0.06),
-    0 4px 60px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-premium-border);
+  box-shadow: var(--glass-premium-shadow);
 }
 
 /* Neon glow accents */
@@ -336,8 +420,8 @@
 
 /* Result card glow */
 .result-card-glow {
-  background: rgba(5, 11, 24, 0.6);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: var(--result-card-bg);
+  border: 1px solid var(--result-card-border);
   transition: all 0.3s ease;
 }
 
@@ -390,8 +474,8 @@
 /* Calculator input focus glow */
 .calc-input {
   transition: all 0.2s ease;
-  background: rgba(5, 11, 24, 0.6);
-  border: 1px solid rgba(31, 41, 55, 0.6);
+  background: var(--calc-input-bg);
+  border: 1px solid var(--calc-input-border);
 }
 
 .calc-input:focus {
@@ -403,20 +487,32 @@
 /* Quick risk button */
 .quick-risk-btn {
   transition: all 0.2s ease;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  color: rgba(148, 163, 184, 0.8);
+  background: var(--quick-risk-bg);
+  border: 1px solid var(--quick-risk-border);
+  color: var(--quick-risk-text);
 }
 
 .quick-risk-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #93c5fd;
+  background: var(--quick-risk-hover-bg);
+  border-color: var(--quick-risk-hover-border);
+  color: var(--quick-risk-hover-text);
 }
 
 .quick-risk-btn.active {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.5);
-  color: #60a5fa;
+  background: var(--quick-risk-active-bg);
+  border-color: var(--quick-risk-active-border);
+  color: var(--quick-risk-active-text);
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
 }
+
+/* ============================================================
+   Light theme — specific overrides for inline styles that 
+   can't use CSS variables (e.g. component props)
+   ============================================================ */
+
+/* Light mode card shadow */
+.light .card-hover:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode table & stat backgrounds use theme tokens */

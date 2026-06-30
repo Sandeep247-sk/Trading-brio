@@ -11,6 +11,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
+import { useChartTheme } from "./use-chart-theme";
 
 interface MonthlyPnlData {
   month: string;
@@ -31,34 +32,43 @@ const formatCurrency = (val: number, currency = "USD") => {
   return `${symbol}${Math.abs(val).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 };
 
-const CustomTooltip = ({ active, payload, currency }: any) => {
+function ChartTooltip({ active, payload, currency, theme }: any) {
   if (!active || !payload?.length) return null;
   const data = payload[0].payload;
   return (
-    <div className="bg-gray-950/95 border border-gray-800 rounded-lg px-3 py-2.5 shadow-xl backdrop-blur-sm space-y-1">
-      <p className="text-[11px] font-semibold text-gray-300">{data.label}</p>
+    <div
+      className="rounded-lg px-3 py-2.5 shadow-xl backdrop-blur-sm space-y-1"
+      style={{
+        background: theme.tooltipBg,
+        border: `1px solid ${theme.tooltipBorder}`,
+        color: theme.tooltipText,
+      }}
+    >
+      <p className="text-[11px] font-semibold" style={{ color: theme.tooltipText }}>{data.label}</p>
       <div className="space-y-0.5">
-        <p className="text-[10px] text-gray-500">
-          Trades: <span className="text-gray-300 font-mono">{data.trades}</span>
+        <p className="text-[10px]" style={{ color: theme.tooltipMuted }}>
+          Trades: <span className="font-mono" style={{ color: theme.tooltipText }}>{data.trades}</span>
         </p>
-        <p className="text-[10px] text-green-400 font-mono">
+        <p className="text-[10px] text-green-500 font-mono">
           Profit: +{formatCurrency(data.profit, currency)}
         </p>
-        <p className="text-[10px] text-red-400 font-mono">
+        <p className="text-[10px] text-red-500 font-mono">
           Loss: -{formatCurrency(Math.abs(data.loss), currency)}
         </p>
-        <p className={`text-xs font-bold font-mono ${data.net >= 0 ? "text-green-400" : "text-red-400"}`}>
+        <p className={`text-xs font-bold font-mono ${data.net >= 0 ? "text-green-500" : "text-red-500"}`}>
           Net: {data.net >= 0 ? "+" : "-"}{formatCurrency(data.net, currency)}
         </p>
       </div>
     </div>
   );
-};
+}
 
 export function MonthlyPnlChart({ data, currency = "USD" }: MonthlyPnlChartProps) {
+  const theme = useChartTheme();
+
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[300px] text-gray-500 text-xs">
+      <div className="flex items-center justify-center h-[300px] text-muted-foreground text-xs">
         No monthly data to display
       </div>
     );
@@ -67,22 +77,22 @@ export function MonthlyPnlChart({ data, currency = "USD" }: MonthlyPnlChartProps
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1a1f2e" />
+        <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
         <XAxis
           dataKey="label"
-          tick={{ fill: "#6b7280", fontSize: 10 }}
-          tickLine={{ stroke: "#1a1f2e" }}
-          axisLine={{ stroke: "#1a1f2e" }}
+          tick={{ fill: theme.tick, fontSize: 10 }}
+          tickLine={{ stroke: theme.axis }}
+          axisLine={{ stroke: theme.axis }}
         />
         <YAxis
-          tick={{ fill: "#6b7280", fontSize: 10 }}
-          tickLine={{ stroke: "#1a1f2e" }}
-          axisLine={{ stroke: "#1a1f2e" }}
+          tick={{ fill: theme.tick, fontSize: 10 }}
+          tickLine={{ stroke: theme.axis }}
+          axisLine={{ stroke: theme.axis }}
           tickFormatter={(val) => `${val >= 0 ? "+" : "-"}${formatCurrency(val, currency)}`}
           width={75}
         />
-        <Tooltip content={<CustomTooltip currency={currency} />} />
-        <ReferenceLine y={0} stroke="#374151" />
+        <Tooltip content={<ChartTooltip currency={currency} theme={theme} />} />
+        <ReferenceLine y={0} stroke={theme.reference} />
         <Bar dataKey="net" radius={[4, 4, 0, 0]} maxBarSize={40}>
           {data.map((entry, index) => (
             <Cell

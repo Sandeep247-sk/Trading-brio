@@ -31,7 +31,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   forex: "text-blue-400",
   index: "text-purple-400",
   crypto: "text-orange-400",
-  custom: "text-gray-400",
+  custom: "text-muted-foreground",
 };
 
 interface LotSizeCalculatorProps {
@@ -106,27 +106,27 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left Column - Core Inputs */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-gray-800/60">
+          <div className="flex items-center gap-2 pb-3 border-b border-border/60">
             <Layers className="h-4 w-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-gray-200">Lot Size Calculator</h3>
+            <h3 className="text-sm font-semibold text-foreground">Lot Size Calculator</h3>
           </div>
 
           {/* Account Balance */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Account Balance</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Account Balance</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">{symbol}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold">{symbol}</span>
               <input type="number" value={balance} onChange={(e) => setBalance(parseFloat(e.target.value) || 0)}
-                className="calc-input w-full h-11 pl-7 pr-3 rounded-xl text-sm text-gray-200 font-mono font-bold" />
+                className="calc-input w-full h-11 pl-7 pr-3 rounded-xl text-sm text-foreground font-mono font-bold" />
             </div>
           </div>
 
           {/* Risk % + Quick Buttons */}
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Risk Percentage</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Risk Percentage</label>
             <input type="number" step="0.1" min="0.1" max="100" value={riskPercent}
               onChange={(e) => setRiskPercent(parseFloat(e.target.value) || 0)}
-              className="calc-input w-full h-11 px-3 rounded-xl text-sm text-gray-200 font-mono font-bold" />
+              className="calc-input w-full h-11 px-3 rounded-xl text-sm text-foreground font-mono font-bold" />
             <div className="flex gap-2">
               {QUICK_RISKS.map((r) => (
                 <button key={r} onClick={() => setRiskPercent(r)}
@@ -140,29 +140,29 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
           {/* Entry & Stop Loss */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Entry Price</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Entry Price</label>
               <input type="number" step="any" placeholder="0.00" value={entryPrice}
                 onChange={(e) => setEntryPrice(e.target.value)}
-                className="calc-input w-full h-11 px-3 rounded-xl text-sm text-gray-200 font-mono" />
+                className="calc-input w-full h-11 px-3 rounded-xl text-sm text-foreground font-mono" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-red-400/70 uppercase tracking-wider">Stop Loss</label>
               <input type="number" step="any" placeholder="0.00" value={stopLossPrice}
                 onChange={(e) => setStopLossPrice(e.target.value)}
-                className="calc-input w-full h-11 px-3 rounded-xl text-sm text-gray-200 font-mono" style={{ borderColor: "rgba(239,68,68,0.15)" }} />
+                className="calc-input w-full h-11 px-3 rounded-xl text-sm text-foreground font-mono" style={{ borderColor: "rgba(239,68,68,0.15)" }} />
             </div>
           </div>
 
           {/* Instrument Selector */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Instrument / Pair</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Instrument / Pair</label>
             <div className="grid grid-cols-4 gap-1.5">
               {INSTRUMENT_PRESETS.map((p, i) => (
                 <button key={p.symbol} onClick={() => setSelectedPresetIdx(i)}
                   className={`py-2 px-1 rounded-lg text-[10px] font-bold transition-all duration-200 border ${
                     selectedPresetIdx === i
                       ? "bg-blue-500/15 border-blue-500/40 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)]"
-                      : "bg-gray-900/40 border-gray-800/50 text-gray-500 hover:text-gray-300 hover:border-gray-700"
+                      : "bg-muted/40 border-border/50 text-muted-foreground hover:text-foreground/80 hover:border-border"
                   }`}>
                   <span className={selectedPresetIdx === i ? CATEGORY_COLORS[p.category] : ""}>{p.label}</span>
                 </button>
@@ -177,19 +177,19 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
                 transition={{ duration: 0.3 }} className="overflow-hidden">
                 <div className="grid grid-cols-3 gap-2 pt-1">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Pip Size</label>
+                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Pip Size</label>
                     <input type="number" step="any" value={customPipSize} onChange={(e) => setCustomPipSize(parseFloat(e.target.value) || 0.0001)}
-                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-gray-300 font-mono" />
+                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-foreground/80 font-mono" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Pip Value</label>
+                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Pip Value</label>
                     <input type="number" step="any" value={customPipValue} onChange={(e) => setCustomPipValue(parseFloat(e.target.value) || 1)}
-                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-gray-300 font-mono" />
+                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-foreground/80 font-mono" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Contract</label>
+                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Contract</label>
                     <input type="number" step="any" value={customContractSize} onChange={(e) => setCustomContractSize(parseFloat(e.target.value) || 1)}
-                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-gray-300 font-mono" />
+                      className="calc-input w-full h-9 px-2 rounded-lg text-xs text-foreground/80 font-mono" />
                   </div>
                 </div>
               </motion.div>
@@ -198,22 +198,22 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
 
           {/* Preset Info Bar */}
           {!isCustom && (
-            <div className="flex items-center gap-3 text-[9px] text-gray-500 bg-gray-900/30 rounded-lg px-3 py-2 border border-gray-800/40">
-              <span>Pip: <strong className="text-gray-400">{pipSize}</strong></span>
-              <span className="text-gray-700">|</span>
-              <span>Value: <strong className="text-gray-400">{symbol}{pipValue}</strong></span>
-              <span className="text-gray-700">|</span>
-              <span>Contract: <strong className="text-gray-400">{contractSize.toLocaleString()}</strong></span>
+            <div className="flex items-center gap-3 text-[9px] text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 border border-border/40">
+              <span>Pip: <strong className="text-muted-foreground">{pipSize}</strong></span>
+              <span className="text-muted-foreground/50">|</span>
+              <span>Value: <strong className="text-muted-foreground">{symbol}{pipValue}</strong></span>
+              <span className="text-muted-foreground/50">|</span>
+              <span>Contract: <strong className="text-muted-foreground">{contractSize.toLocaleString()}</strong></span>
             </div>
           )}
         </div>
 
         {/* Right Column - Results */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-800/60">
+          <div className="flex items-center justify-between pb-3 border-b border-border/60">
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-blue-400" />
-              <h3 className="text-sm font-semibold text-gray-200">Results</h3>
+              <h3 className="text-sm font-semibold text-foreground">Results</h3>
             </div>
             <div className="flex items-center gap-2">
               <button onClick={handleCopy} disabled={!calc.valid}
@@ -222,7 +222,7 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
                 {copied ? "Copied!" : "Copy"}
               </button>
               <button onClick={handleReset}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-200 bg-gray-800/40 border border-gray-700/40 text-gray-400 hover:text-gray-200 hover:bg-gray-800/60">
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-200 bg-muted/40 border border-border/40 text-muted-foreground hover:text-foreground hover:bg-muted/60">
                 <RotateCcw className="h-3 w-3" />
               </button>
             </div>
@@ -231,42 +231,42 @@ export function LotSizeCalculator({ accountBalance, currency = "USD" }: LotSizeC
           {/* Primary Result - Lot Size */}
           <motion.div key={`lot-${resultKey}`} initial={{ scale: 0.97, opacity: 0.5 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3 }}
             className="result-card-glow rounded-2xl p-5 text-center">
-            <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Recommended Lot Size</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Recommended Lot Size</p>
             <p className="text-4xl font-black font-mono text-blue-400 tracking-tight">
               {calc.valid ? calc.lotSize.toFixed(2) : "—"}
             </p>
-            <p className="text-[10px] text-gray-500 mt-1.5">{calc.valid ? `${preset.label} Standard Lots` : "Enter prices to calculate"}</p>
+            <p className="text-[10px] text-muted-foreground mt-1.5">{calc.valid ? `${preset.label} Standard Lots` : "Enter prices to calculate"}</p>
           </motion.div>
 
           {/* Result Grid */}
           <div className="grid grid-cols-2 gap-3">
             <motion.div key={`risk-${resultKey}`} initial={{ y: 4, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 }}
               className="result-card-glow rounded-xl p-4">
-              <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Risk Amount</p>
+              <p className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Risk Amount</p>
               <p className="text-lg font-bold font-mono text-red-400">{symbol}{fmt(calc.riskAmount)}</p>
-              <p className="text-[9px] text-gray-600 mt-0.5">{riskPercent}% of balance</p>
+              <p className="text-[9px] text-muted-foreground/60 mt-0.5">{riskPercent}% of balance</p>
             </motion.div>
 
             <motion.div key={`dist-${resultKey}`} initial={{ y: 4, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
               className="result-card-glow rounded-xl p-4">
-              <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Stop Distance</p>
+              <p className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Stop Distance</p>
               <p className="text-lg font-bold font-mono text-orange-400">
                 {calc.valid ? `${calc.stopPips.toFixed(1)} ${preset.category === "forex" || preset.category === "gold" ? "pips" : "pts"}` : "—"}
               </p>
-              <p className="text-[9px] text-gray-600 mt-0.5">{calc.valid ? `${calc.stopDistance.toFixed(pipSize < 0.01 ? 5 : 2)} price` : "—"}</p>
+              <p className="text-[9px] text-muted-foreground/60 mt-0.5">{calc.valid ? `${calc.stopDistance.toFixed(pipSize < 0.01 ? 5 : 2)} price` : "—"}</p>
             </motion.div>
 
             <motion.div key={`pos-${resultKey}`} initial={{ y: 4, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }}
               className="result-card-glow rounded-xl p-4">
-              <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Position Value</p>
-              <p className="text-lg font-bold font-mono text-gray-200">
+              <p className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Position Value</p>
+              <p className="text-lg font-bold font-mono text-foreground">
                 {calc.valid ? `${symbol}${calc.positionValue >= 1000000 ? `${(calc.positionValue / 1000000).toFixed(2)}M` : fmt(calc.positionValue)}` : "—"}
               </p>
             </motion.div>
 
             <motion.div key={`margin-${resultKey}`} initial={{ y: 4, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
               className="result-card-glow rounded-xl p-4">
-              <p className="text-[9px] text-gray-500 uppercase font-bold mb-1">Margin Est. (1:100)</p>
+              <p className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Margin Est. (1:100)</p>
               <p className="text-lg font-bold font-mono text-purple-400">
                 {calc.valid ? `${symbol}${fmt(calc.marginEstimate)}` : "—"}
               </p>

@@ -117,7 +117,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
       case "LOW":
         return "bg-blue-950/40 text-blue-400 border-blue-800/30";
       default:
-        return "bg-gray-950/40 text-gray-400 border-gray-800/30";
+        return "bg-card/60 text-muted-foreground border-border/30";
     }
   };
 
@@ -153,7 +153,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
         {/* Total Count */}
         <div className="glass-card p-5 rounded-lg flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Violations</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Violations</p>
             <p className="text-3xl font-bold font-mono tracking-tight text-white">{violations.length}</p>
           </div>
           <div className="h-10 w-10 bg-red-950/30 border border-red-900/20 rounded-lg flex items-center justify-center text-red-400">
@@ -164,12 +164,12 @@ export function ViolationsList({ violations }: ViolationsListProps) {
         {/* PnL Cost */}
         <div className="glass-card p-5 rounded-lg flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">P&L Cost / Leakage</p>
-            <p className={`text-3xl font-bold font-mono tracking-tight ${stats.totalPlImpact < 0 ? "text-red-400" : "text-gray-300"}`}>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">P&L Cost / Leakage</p>
+            <p className={`text-3xl font-bold font-mono tracking-tight ${stats.totalPlImpact < 0 ? "text-red-400" : "text-foreground/80"}`}>
               {formatCurrency(stats.totalPlImpact)}
             </p>
           </div>
-          <div className={`h-10 w-10 border rounded-lg flex items-center justify-center ${stats.totalPlImpact < 0 ? "bg-red-950/30 border-red-900/20 text-red-400" : "bg-gray-950 border-gray-800 text-gray-400"}`}>
+          <div className={`h-10 w-10 border rounded-lg flex items-center justify-center ${stats.totalPlImpact < 0 ? "bg-red-950/30 border-red-900/20 text-red-400" : "bg-card border-border text-muted-foreground"}`}>
             <TrendingDown className="h-5 w-5" />
           </div>
         </div>
@@ -177,7 +177,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
         {/* Discipline Grade */}
         <div className="glass-card p-5 rounded-lg flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Discipline Grade</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Discipline Grade</p>
             <p className="text-3xl font-bold font-mono tracking-tight text-white">{stats.grade}</p>
           </div>
           <div className={`h-10 w-10 border rounded-lg flex items-center justify-center font-bold text-sm ${stats.gradeColor}`}>
@@ -187,7 +187,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
 
         {/* Severity counts */}
         <div className="glass-card p-4 rounded-lg flex flex-col justify-between space-y-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Severity Breakdown</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Severity Breakdown</p>
           <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold font-mono">
             <div className="bg-red-950/20 border border-red-900/30 p-1.5 rounded text-red-400">
               <span className="block text-[8px] text-red-500 uppercase">Crit</span>
@@ -213,13 +213,13 @@ export function ViolationsList({ violations }: ViolationsListProps) {
       <div className="glass-card p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search violations, assets, descriptions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 bg-gray-950 border border-gray-850 rounded text-sm text-gray-300 focus:outline-none focus:border-blue-500"
+            className="w-full h-10 pl-9 pr-4 bg-card border border-border rounded text-sm text-foreground/80 focus:outline-none focus:border-blue-500"
           />
         </div>
 
@@ -227,11 +227,11 @@ export function ViolationsList({ violations }: ViolationsListProps) {
         <div className="flex flex-wrap items-center gap-3">
           {/* Severity */}
           <div className="flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-gray-500" />
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="h-10 px-3 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
+              className="h-10 px-3 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-semibold"
             >
               <option value="ALL">All Severities</option>
               <option value="CRITICAL">Critical Only</option>
@@ -245,7 +245,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="h-10 px-3 bg-gray-950 border border-gray-850 rounded text-xs text-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
+            className="h-10 px-3 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-semibold"
           >
             <option value="ALL">All Categories</option>
             {categories.map((c) => (
@@ -265,7 +265,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
           </div>
           <div className="max-w-sm space-y-2">
             <h3 className="text-lg font-bold text-white">All Clear! No Violations Found</h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {violations.length > 0
                 ? "No violations match your current filters. Try relaxing them!"
                 : "You have 100% strategy compliance and risk discipline on this account. Keep it up!"}
@@ -300,14 +300,14 @@ export function ViolationsList({ violations }: ViolationsListProps) {
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-gray-300 leading-relaxed">{v.description}</p>
+                <p className="text-xs text-foreground/80 leading-relaxed">{v.description}</p>
 
                 {/* Trade details if any */}
                 {v.trade && (
-                  <div className="bg-gray-950/50 border border-gray-900 rounded-md p-3 flex items-center justify-between text-xs">
+                  <div className="bg-card/70 border border-border rounded-md p-3 flex items-center justify-between text-xs">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-gray-200">{v.trade.pair}</span>
+                        <span className="font-bold text-foreground">{v.trade.pair}</span>
                         <span
                           className={`text-[10px] font-bold px-1.5 rounded ${
                             v.trade.direction === "LONG"
@@ -318,7 +318,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
                           {v.trade.direction}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-gray-500 font-mono text-[10px]">
+                      <div className="flex items-center gap-1.5 text-muted-foreground font-mono text-[10px]">
                         <Calendar className="h-3 w-3" />
                         {new Date(v.trade.date).toLocaleDateString(undefined, {
                           month: "short",
@@ -336,7 +336,7 @@ export function ViolationsList({ violations }: ViolationsListProps) {
                             ? "text-green-400"
                             : v.trade.pnl < 0
                             ? "text-red-400"
-                            : "text-gray-400"
+                            : "text-muted-foreground"
                         }`}
                       >
                         {v.trade.pnl > 0 ? "+" : ""}
@@ -355,14 +355,14 @@ export function ViolationsList({ violations }: ViolationsListProps) {
               </div>
 
               {/* Footer: Date & PL Impact */}
-              <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-900/60 text-xs">
-                <span className="text-gray-500 font-mono text-[10px]">
+              <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/60 text-xs">
+                <span className="text-muted-foreground font-mono text-[10px]">
                   Detected: {new Date(v.createdAt).toLocaleDateString()}
                 </span>
                 {v.plImpact !== null && v.plImpact !== undefined && (
-                  <div className="flex items-center gap-1 font-semibold text-gray-400">
-                    <span className="text-gray-500 text-[10px] uppercase font-bold tracking-wide">P&L Impact:</span>
-                    <span className={Number(v.plImpact) < 0 ? "text-red-400 font-mono" : "text-gray-300 font-mono"}>
+                  <div className="flex items-center gap-1 font-semibold text-muted-foreground">
+                    <span className="text-muted-foreground text-[10px] uppercase font-bold tracking-wide">P&L Impact:</span>
+                    <span className={Number(v.plImpact) < 0 ? "text-red-400 font-mono" : "text-foreground/80 font-mono"}>
                       {formatCurrency(Number(v.plImpact))}
                     </span>
                   </div>

@@ -25,12 +25,12 @@ export function ScoreCard({ title, score, colorClass }: ScoreCardProps) {
   };
 
   return (
-    <div className="p-5 rounded-xl border border-gray-850 bg-card/80 backdrop-blur-sm card-hover">
+    <div className="p-5 rounded-xl border border-border bg-card/80 backdrop-blur-sm card-hover">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{title}</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</span>
         <span className="text-2xl font-bold text-white font-mono">{score}%</span>
       </div>
-      <div className="h-2 w-full bg-gray-950 rounded-full overflow-hidden border border-gray-900">
+      <div className="h-2 w-full bg-card rounded-full overflow-hidden border border-border">
         <div 
           className={`h-full rounded-full transition-all duration-1000 ease-out ${getBarColor()}`}
           style={{ width: `${score}%` }}
@@ -80,7 +80,7 @@ export function ViolationCard({ severity, category, description, plImpact }: Vio
   };
 
   return (
-    <div className={`p-4 border rounded-xl backdrop-blur-md transition duration-300 hover:border-gray-700 flex flex-col justify-between gap-3 ${getSeverityStyles()}`}>
+    <div className={`p-4 border rounded-xl backdrop-blur-md transition duration-300 hover:border-border flex flex-col justify-between gap-3 ${getSeverityStyles()}`}>
       <div className="flex justify-between items-start gap-2">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 shrink-0" />
@@ -94,8 +94,8 @@ export function ViolationCard({ severity, category, description, plImpact }: Vio
       <p className="text-xs font-medium leading-relaxed">{description}</p>
 
       {plImpact !== null && (
-        <div className="border-t border-gray-800/40 pt-2 flex justify-between items-center mt-1">
-          <span className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Estimated Cost</span>
+        <div className="border-t border-border/40 pt-2 flex justify-between items-center mt-1">
+          <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Estimated Cost</span>
           <span className="font-mono text-sm font-black text-red-400">
             -${Math.abs(plImpact).toFixed(2)}
           </span>
@@ -116,20 +116,20 @@ interface CoachingCardProps {
 
 export function CoachingCard({ recommendation, benefit, index }: CoachingCardProps) {
   return (
-    <div className="bg-gray-950 border border-gray-850 p-5 rounded-xl backdrop-blur-md flex gap-4 transition duration-300 hover:border-gray-800">
+    <div className="bg-card border border-border p-5 rounded-xl backdrop-blur-md flex gap-4 transition duration-300 hover:border-border">
       <div className="p-3 bg-blue-950/40 border border-blue-900/40 text-blue-400 rounded-xl h-fit shrink-0">
         <Lightbulb className="h-5 w-5" />
       </div>
       <div className="space-y-2 min-w-0">
-        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block font-mono">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block font-mono">
           Recommendation {index}
         </span>
-        <h4 className="text-sm font-semibold text-gray-200 leading-snug">{recommendation}</h4>
+        <h4 className="text-sm font-semibold text-foreground leading-snug">{recommendation}</h4>
         {benefit && (
-          <div className="pt-1.5 flex items-start gap-1.5 text-xs text-gray-400 leading-normal">
+          <div className="pt-1.5 flex items-start gap-1.5 text-xs text-muted-foreground leading-normal">
             <TrendingUp className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-gray-300">Expected Benefit: </span>
+              <span className="font-semibold text-foreground/80">Expected Benefit: </span>
               {benefit}
             </div>
           </div>
@@ -149,15 +149,15 @@ interface MistakeCardProps {
 
 export function MistakeCard({ description, index }: MistakeCardProps) {
   return (
-    <div className="bg-gray-950 border border-gray-850 p-5 rounded-xl backdrop-blur-md flex gap-4 transition duration-300 hover:border-gray-800">
+    <div className="bg-card border border-border p-5 rounded-xl backdrop-blur-md flex gap-4 transition duration-300 hover:border-border">
       <div className="p-3 bg-amber-950/20 border border-amber-900/30 text-amber-500 rounded-xl h-fit shrink-0">
         <AlertTriangle className="h-5 w-5" />
       </div>
       <div className="space-y-1">
-        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block font-mono">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block font-mono">
           Mistake {index}
         </span>
-        <p className="text-xs font-semibold text-gray-300 leading-relaxed">{description}</p>
+        <p className="text-xs font-semibold text-foreground/80 leading-relaxed">{description}</p>
       </div>
     </div>
   );

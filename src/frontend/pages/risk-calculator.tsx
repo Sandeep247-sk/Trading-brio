@@ -24,11 +24,11 @@ export default async function RiskCalculatorPage() {
   return (
     <div className="space-y-6 animate-fade-in max-w-6xl mx-auto pb-12">
       {/* Header */}
-      <div className="border-b border-gray-900 pb-5">
-        <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl">
+      <div className="border-b border-border pb-5">
+        <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           Risk & Lot Size Calculator
         </h1>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Calculate position size, lot size, and manage risk per trade for{" "}
           <span className="text-blue-400 font-semibold">{metrics.accountInfo.name}</span>
         </p>

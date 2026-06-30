@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountSelector } from "./account-selector";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,6 +134,7 @@ export function Header() {
       {/* Right side */}
       <div className="flex items-center gap-2">
         <AccountSelector />
+        <ThemeToggle />
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger render={

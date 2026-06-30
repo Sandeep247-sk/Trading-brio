@@ -45,11 +45,11 @@ export default async function CoachingPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="border-b border-gray-900 pb-5">
-        <h1 className="text-xl font-bold tracking-tight text-gray-100 sm:text-2xl">
+      <div className="border-b border-border pb-5">
+        <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           Behavioral Coaching
         </h1>
-        <p className="text-xs text-gray-500 mt-1 font-mono uppercase">
+        <p className="text-xs text-muted-foreground mt-1 font-mono uppercase">
           Discipline • Compliance • Consistency — Your path to elite trading
         </p>
       </div>
