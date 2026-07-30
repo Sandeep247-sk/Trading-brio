@@ -17,8 +17,12 @@ import {
   FileSpreadsheet,
   Calendar,
   ScrollText,
+  Clock,
+  Play,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useLoading } from "@/components/providers/loading-provider";
 
 interface SettingsClientProps {
   user: {
@@ -30,6 +34,7 @@ interface SettingsClientProps {
 
 export function SettingsClient({ user }: SettingsClientProps) {
   const router = useRouter();
+  const loadingCtx = useLoading();
 
   // Profile state
   const [name, setName] = useState(user.name);
@@ -344,6 +349,70 @@ export function SettingsClient({ user }: SettingsClientProps) {
             <ScrollText className="h-3.5 w-3.5" />
             View Audit Log
           </Link>
+        </div>
+      </div>
+
+      {/* Loading Screen Preferences */}
+      <div className="glass-card rounded-lg p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/40 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-indigo-950/30 border border-indigo-900/20 flex items-center justify-center text-indigo-400">
+              <Clock className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <span>Loading Screen Preferences</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold">
+                  NEW
+                </span>
+              </h2>
+              <p className="text-[10px] text-muted-foreground">
+                Display full-screen loading animation if page response or navigation takes more than a few seconds
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => loadingCtx.triggerTestLoading(3000, "Previewing Trader Brio Loading Screen")}
+            className="h-8 px-3 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
+          >
+            <Play className="h-3 w-3 fill-indigo-300" />
+            Test Loading Screen
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          {/* Toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/40">
+            <div>
+              <p className="text-xs font-semibold text-foreground">Enable Delayed Loading Screen</p>
+              <p className="text-[10px] text-muted-foreground">Triggers when network or route navigation is slow</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={loadingCtx.enabled}
+              onChange={(e) => loadingCtx.setEnabled(e.target.checked)}
+              className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+            />
+          </div>
+
+          {/* Threshold Selection */}
+          <div className="flex flex-col justify-center p-3 rounded-lg border border-border/50 bg-card/40 space-y-1.5">
+            <label className="text-xs font-semibold text-foreground flex items-center justify-between">
+              <span>Delay Threshold</span>
+              <span className="text-indigo-400 font-mono text-[11px]">{loadingCtx.thresholdSeconds}s delay</span>
+            </label>
+            <select
+              value={loadingCtx.thresholdSeconds}
+              onChange={(e) => loadingCtx.setThresholdSeconds(parseFloat(e.target.value))}
+              disabled={!loadingCtx.enabled}
+              className="w-full h-8 px-2 bg-card border border-border rounded text-xs text-foreground/80 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+            >
+              <option value={1.0}>1.0 second (Fast response)</option>
+              <option value={1.5}>1.5 seconds (Recommended)</option>
+              <option value={2.0}>2.0 seconds (Standard)</option>
+              <option value={3.0}>3.0 seconds (Relaxed)</option>
+            </select>
+          </div>
         </div>
       </div>
 
