@@ -11,9 +11,7 @@ import {
   Calculator,
   BarChart3,
   Brain,
-  ShieldAlert,
   Settings,
-  Shield,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -30,7 +28,6 @@ const iconMap = {
   Calculator,
   BarChart3,
   Brain,
-  ShieldAlert,
   Settings,
 } as const;
 
@@ -42,7 +39,6 @@ const navItems = [
   { label: "Risk Calculator", href: "/risk-calculator", icon: "Calculator" as const },
   { label: "Analytics", href: "/analytics", icon: "BarChart3" as const },
   { label: "Coaching", href: "/coaching", icon: "Brain" as const },
-  { label: "Violations", href: "/violations", icon: "ShieldAlert" as const },
 ];
 
 const bottomItems = [
