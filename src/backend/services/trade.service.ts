@@ -443,4 +443,206 @@ export class TradeService {
     // Invalidate cached metrics for this account
     revalidateTag(`account-${existingTrade.accountId}`, "max");
   }
+
+  /**
+   * Aggregates trade data for the Calendar view.
+   * Groups trades by date and returns per-day metrics + period summaries.
+   */
+  static async getCalendarData(
+    userId: string,
+    accountId: string | null,
+    timeframe: "week" | "month" | "year" | "all",
+    year: number,
+    month: number // 0-indexed (0 = January)
+  ) {
+    const account = await this.getOrCreateUserAccount(userId, accountId);
+
+    // Determine date range based on timeframe
+    let startDate: Date;
+    let endDate: Date;
+    const now = new Date();
+
+    switch (timeframe) {
+      case "week": {
+        // Current week containing the given month/year context
+        const refDate = new Date(year, month, 1);
+        const dayOfWeek = refDate.getDay(); // 0=Sun
+        startDate = new Date(refDate);
+        startDate.setDate(refDate.getDate() - dayOfWeek);
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+        endDate.setHours(23, 59, 59, 999);
+        break;
+      }
+      case "month": {
+        startDate = new Date(year, month, 1);
+        endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        break;
+      }
+      case "year": {
+        startDate = new Date(year, 0, 1);
+        endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+        break;
+      }
+      case "all":
+      default: {
+        startDate = new Date(2000, 0, 1);
+        endDate = new Date(2099, 11, 31, 23, 59, 59, 999);
+        break;
+      }
+    }
+
+    // Fetch all trades in the range
+    const trades = await prisma.trade.findMany({
+      where: {
+        accountId: account.id,
+        deletedAt: null,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+        pnl: true,
+        result: true,
+        rrAchieved: true,
+        pair: true,
+      },
+      orderBy: { date: "asc" },
+    });
+
+    // Group by date string (YYYY-MM-DD)
+    const dailyMap: Record<
+      string,
+      {
+        date: string;
+        netPnl: number;
+        tradeCount: number;
+        winCount: number;
+        lossCount: number;
+        breakevenCount: number;
+      }
+    > = {};
+
+    let totalPnl = 0;
+    let totalWins = 0;
+    let totalLosses = 0;
+    let totalBreakevens = 0;
+    let totalGrossProfit = 0;
+    let totalGrossLoss = 0;
+    let rrSum = 0;
+    let rrCount = 0;
+
+    for (const trade of trades) {
+      const dateKey = trade.date.toISOString().slice(0, 10);
+      if (!dailyMap[dateKey]) {
+        dailyMap[dateKey] = {
+          date: dateKey,
+          netPnl: 0,
+          tradeCount: 0,
+          winCount: 0,
+          lossCount: 0,
+          breakevenCount: 0,
+        };
+      }
+      const day = dailyMap[dateKey];
+      const pnl = trade.pnl ? Number(trade.pnl) : 0;
+
+      day.netPnl += pnl;
+      day.tradeCount += 1;
+
+      if (trade.result === "WIN") {
+        day.winCount += 1;
+        totalWins += 1;
+        if (pnl > 0) totalGrossProfit += pnl;
+      } else if (trade.result === "LOSS") {
+        day.lossCount += 1;
+        totalLosses += 1;
+        if (pnl < 0) totalGrossLoss += Math.abs(pnl);
+      } else if (trade.result === "BREAKEVEN") {
+        day.breakevenCount += 1;
+        totalBreakevens += 1;
+      }
+
+      totalPnl += pnl;
+
+      if (trade.rrAchieved !== null) {
+        rrSum += Number(trade.rrAchieved);
+        rrCount += 1;
+      }
+    }
+
+    const days = Object.values(dailyMap);
+    const totalTrades = trades.length;
+    const winRate = totalTrades > 0 ? (totalWins / totalTrades) * 100 : 0;
+    const profitFactor = totalGrossLoss > 0 ? totalGrossProfit / totalGrossLoss : totalGrossProfit > 0 ? Infinity : 0;
+    const avgRR = rrCount > 0 ? rrSum / rrCount : 0;
+
+    // Best and worst trading days
+    let bestDay: { date: string; pnl: number } | null = null;
+    let worstDay: { date: string; pnl: number } | null = null;
+    for (const day of days) {
+      if (!bestDay || day.netPnl > bestDay.pnl) {
+        bestDay = { date: day.date, pnl: day.netPnl };
+      }
+      if (!worstDay || day.netPnl < worstDay.pnl) {
+        worstDay = { date: day.date, pnl: day.netPnl };
+      }
+    }
+
+    // Monthly net total (trades in the selected month regardless of timeframe)
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+    let monthlyNetTotal = 0;
+    for (const trade of trades) {
+      if (trade.date >= monthStart && trade.date <= monthEnd) {
+        monthlyNetTotal += trade.pnl ? Number(trade.pnl) : 0;
+      }
+    }
+
+    // Annual net total
+    const yearStart = new Date(year, 0, 1);
+    const yearEnd = new Date(year, 11, 31, 23, 59, 59, 999);
+    let annualNetTotal = 0;
+    // For annual total we may need to query separately if timeframe is month/week
+    if (timeframe === "year" || timeframe === "all") {
+      annualNetTotal = totalPnl; // already within year range
+    } else {
+      // Fetch annual separately
+      const annualAgg = await prisma.trade.aggregate({
+        where: {
+          accountId: account.id,
+          deletedAt: null,
+          date: { gte: yearStart, lte: yearEnd },
+        },
+        _sum: { pnl: true },
+      });
+      annualNetTotal = Number(annualAgg._sum.pnl ?? 0);
+    }
+
+    return {
+      days,
+      summary: {
+        totalTrades,
+        totalPnl,
+        monthlyNetTotal,
+        annualNetTotal,
+        winRate,
+        totalWins,
+        totalLosses,
+        totalBreakevens,
+        profitFactor: profitFactor === Infinity ? 999 : profitFactor,
+        avgRR,
+        bestDay,
+        worstDay,
+        tradingDays: days.length,
+      },
+      range: {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      },
+    };
+  }
 }

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   BookOpen,
+  CalendarDays,
   Target,
   Calculator,
   BarChart3,
@@ -24,6 +25,7 @@ import { useState } from "react";
 const iconMap = {
   LayoutDashboard,
   BookOpen,
+  CalendarDays,
   Target,
   Calculator,
   BarChart3,
@@ -35,6 +37,7 @@ const iconMap = {
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" as const },
   { label: "Trade Journal", href: "/journal", icon: "BookOpen" as const },
+  { label: "Calendar", href: "/calendar", icon: "CalendarDays" as const },
   { label: "Strategy", href: "/strategy", icon: "Target" as const },
   { label: "Risk Calculator", href: "/risk-calculator", icon: "Calculator" as const },
   { label: "Analytics", href: "/analytics", icon: "BarChart3" as const },

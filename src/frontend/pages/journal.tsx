@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TradeService, TradeFilters } from "@/services/trade.service";
-import { Plus, Search, Filter, ArrowUpRight, ArrowDownRight, Minus, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Filter, ArrowUpRight, ArrowDownRight, Minus, BookOpen, ChevronLeft, ChevronRight, CalendarDays, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Direction, TradeResult, TradingSession } from "@prisma/client";
 import { TRADING_PAIRS } from "@/lib/constants";
@@ -25,6 +25,7 @@ interface SearchParams {
   strategyId?: string;
   startDate?: string;
   endDate?: string;
+  date?: string;
 }
 
 export default async function JournalPage({
@@ -47,9 +48,14 @@ export default async function JournalPage({
     direction: (params.direction as Direction) || undefined,
     result: (params.result as TradeResult) || undefined,
     strategyId: params.strategyId || undefined,
-    startDate: params.startDate || undefined,
-    endDate: params.endDate || undefined,
+    startDate: params.date || params.startDate || undefined,
+    endDate: params.date ? params.date + "T23:59:59.999Z" : (params.endDate || undefined),
   };
+
+  const dateFilterActive = !!params.date;
+  const dateFilterLabel = params.date
+    ? new Date(params.date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })
+    : null;
 
   const cookieStore = await cookies();
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || null;
@@ -112,6 +118,25 @@ export default async function JournalPage({
           New Trade
         </Button>
       </div>
+
+      {/* Date Filter Banner (from Calendar click-through) */}
+      {dateFilterActive && (
+        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              Showing trades for <span className="text-primary">{dateFilterLabel}</span>
+            </span>
+          </div>
+          <Link
+            href="/journal"
+            className="flex items-center gap-1 px-3 py-1.5 bg-card border border-border hover:bg-muted rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground transition"
+          >
+            <X className="h-3 w-3" />
+            Clear filter
+          </Link>
+        </div>
+      )}
 
       {/* Mini Stats Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
