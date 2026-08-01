@@ -128,16 +128,11 @@ export function LoadingScreen({
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono-numbers px-1">
+        <div className="flex items-center justify-center text-[11px] text-muted-foreground font-mono-numbers px-1">
           <span className="flex items-center gap-1.5 text-blue-400/90 font-medium">
             <Loader2 className="h-3 w-3 animate-spin" />
             Taking a few seconds...
           </span>
-          {showTimer && (
-            <span className="bg-sidebar-accent/60 px-2 py-0.5 rounded border border-border/40 font-mono text-[10px]">
-              {seconds.toFixed(1)}s elapsed
-            </span>
-          )}
         </div>
       </div>
 

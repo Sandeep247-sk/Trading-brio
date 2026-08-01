@@ -174,7 +174,6 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
           <LoadingScreen
             message={loadingMessage}
             subtitle={loadingSubtitle}
-            showTimer={true}
             onDismiss={stopLoading}
             fullScreen={true}
           />

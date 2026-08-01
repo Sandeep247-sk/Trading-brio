@@ -5,7 +5,6 @@ export default function GlobalLoading() {
     <LoadingScreen
       message="Loading Trade OS"
       subtitle="Preparing your trading environment & live market data..."
-      showTimer={true}
       fullScreen={true}
     />
   );
