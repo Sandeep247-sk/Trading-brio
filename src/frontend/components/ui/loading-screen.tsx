@@ -25,7 +25,7 @@ const TRADING_TIPS = [
 export function LoadingScreen({
   message = "Loading Trade OS",
   subtitle = "Optimizing your trading workspace & syncing live analytics...",
-  showTimer = true,
+  showTimer = false,
   onDismiss,
   fullScreen = true,
   elapsedSeconds = 0,
