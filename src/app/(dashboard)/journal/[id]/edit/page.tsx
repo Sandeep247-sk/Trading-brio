@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Edit Trade ${id.substring(0, 8)} | Trader Brio`,
+    title: `Edit Trade ${id.substring(0, 8)} | Trade OS`,
   };
 }
 

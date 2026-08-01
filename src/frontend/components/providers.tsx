@@ -14,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange={false}
-        storageKey="trader-brio-theme"
+        storageKey="trade-os-theme"
       >
         <TooltipProvider delay={300}>
           <LoadingProvider>

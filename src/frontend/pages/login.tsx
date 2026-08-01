@@ -70,11 +70,11 @@ export default function LoginPage() {
       {/* Logo */}
       <div className="flex items-center justify-center gap-3.5 mb-8">
         <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center border border-border bg-card/50">
-          <img src="/logo.jpg" alt="Trading Brio" className="w-full h-full object-cover" />
+          <img src="/logo.jpg" alt="Trade OS" className="w-full h-full object-cover" />
         </div>
         <div className="pl-0.5">
           <h1 className="text-xl font-bold tracking-tight leading-none">
-            Trading <span className="gradient-text">Brio</span>
+            Trade <span className="gradient-text">OS</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1.5">Your Trading Operating System</p>
         </div>

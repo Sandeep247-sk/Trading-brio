@@ -26,7 +26,7 @@ import { SessionPieChart } from "@/components/charts/session-pie-chart";
 import { PnlDistributionChart } from "@/components/charts/pnl-distribution-chart";
 
 export const metadata: Metadata = {
-  title: "Analytics | Trader Brio",
+  title: "Analytics | Trade OS",
 };
 
 export default async function AnalyticsPage() {

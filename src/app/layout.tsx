@@ -18,19 +18,19 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Trader Brio — Trading Operating System",
-    template: "%s | Trader Brio",
+    default: "Trade OS — Trading Operating System",
+    template: "%s | Trade OS",
   },
   description:
     "A personal trading operating system designed to enforce trading discipline, measure strategy adherence, track performance, and improve consistency.",
   keywords: [
     "trading journal",
-    "trader brio",
+    "trade os",
     "trade tracker",
     "strategy adherence",
     "trading discipline",
   ],
-  authors: [{ name: "Trader Brio" }],
+  authors: [{ name: "Trade OS" }],
   robots: "noindex, nofollow", // Private application
   manifest: "/manifest.json",
   icons: {

@@ -84,7 +84,6 @@ export const NAV_ITEMS = [
   { label: "Strategy", href: "/strategy", icon: "Target" },
   { label: "Risk Calculator", href: "/risk-calculator", icon: "Calculator" },
   { label: "Analytics", href: "/analytics", icon: "BarChart3" },
-  { label: "Violations", href: "/violations", icon: "ShieldAlert" },
   { label: "Settings", href: "/settings", icon: "Settings" },
 ] as const;
 

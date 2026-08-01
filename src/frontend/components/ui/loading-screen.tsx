@@ -23,7 +23,7 @@ const TRADING_TIPS = [
 ];
 
 export function LoadingScreen({
-  message = "Loading Trader Brio",
+  message = "Loading Trade OS",
   subtitle = "Optimizing your trading workspace & syncing live analytics...",
   showTimer = true,
   onDismiss,
@@ -94,7 +94,7 @@ export function LoadingScreen({
         {/* Center Logo Icon / Image */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 rounded-xl overflow-hidden border border-blue-400/30 shadow-inner bg-card flex items-center justify-center">
-            <img src="/logo.jpg" alt="Trader Brio Logo" className="w-full h-full object-cover" />
+            <img src="/logo.jpg" alt="Trade OS Logo" className="w-full h-full object-cover" />
           </div>
         </div>
 

@@ -372,7 +372,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
             </div>
           </div>
           <button
-            onClick={() => loadingCtx.triggerTestLoading(3000, "Previewing Trader Brio Loading Screen")}
+            onClick={() => loadingCtx.triggerTestLoading(3000, "Previewing Trade OS Loading Screen")}
             className="h-8 px-3 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
           >
             <Play className="h-3 w-3 fill-indigo-300" />
@@ -432,7 +432,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
           <div className="flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground">
-              Deleting your account will permanently remove all your trades, strategies, accounts, analytics, and violations data. This action <strong className="text-red-400">cannot be undone</strong>.
+              Deleting your account will permanently remove all your trades, strategies, accounts, and analytics data. This action <strong className="text-red-400">cannot be undone</strong>.
             </p>
           </div>
           <div className="space-y-3">

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { SettingsClient } from "@/components/settings/settings-client";
 
 export const metadata: Metadata = {
-  title: "Settings | Trader Brio",
+  title: "Settings | Trade OS",
 };
 
 export default async function SettingsPage() {

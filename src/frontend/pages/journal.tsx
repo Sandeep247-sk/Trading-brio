@@ -13,7 +13,7 @@ import { JournalAccountSelector } from "@/components/journal/journal-account-sel
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "Trade Journal | Trader Brio",
+  title: "Trade Journal | Trade OS",
 };
 
 interface SearchParams {

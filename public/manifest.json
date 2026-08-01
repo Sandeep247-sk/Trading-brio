@@ -1,6 +1,6 @@
 {
-  "name": "Trader Brio — Trading Operating System",
-  "short_name": "Trader Brio",
+  "name": "Trade OS — Trading Operating System",
+  "short_name": "Trade OS",
   "description": "A personal trading operating system designed to enforce trading discipline.",
   "start_url": "/",
   "display": "standalone",

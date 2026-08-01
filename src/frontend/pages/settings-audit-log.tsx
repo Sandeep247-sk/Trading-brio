@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { AuditLogClient } from "@/components/settings/audit-log-client";
 
 export const metadata: Metadata = {
-  title: "Audit Log | Trader Brio",
+  title: "Audit Log | Trade OS",
 };
 
 export default async function AuditLogPage() {

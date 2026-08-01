@@ -20,7 +20,7 @@ interface LoadingContextType {
 
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
 
-const STORAGE_KEY = "trader_brio_loading_prefs_v1";
+const STORAGE_KEY = "trade_os_loading_prefs_v1";
 
 export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,7 +32,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
 
   // Active Loading state
   const [isLoadingVisible, setIsLoadingVisible] = useState<boolean>(false);
-  const [loadingMessage, setLoadingMessage] = useState<string>("Loading Trader Brio");
+  const [loadingMessage, setLoadingMessage] = useState<string>("Loading Trade OS");
   const [loadingSubtitle, setLoadingSubtitle] = useState<string>(
     "Optimizing your trading workspace & syncing live analytics..."
   );
@@ -91,7 +91,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
 
   // Start loading after threshold
   const scheduleDelayedLoading = useCallback(
-    (msg = "Loading Trader Brio", sub = "Taking a few seconds to process...") => {
+    (msg = "Loading Trade OS", sub = "Taking a few seconds to process...") => {
       if (!enabled) return;
       clearLoadingTimer();
       setLoadingMessage(msg);
@@ -110,7 +110,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
 
   // Start loading immediately
   const startLoading = useCallback(
-    (msg = "Loading Trader Brio", sub = "Processing your request...") => {
+    (msg = "Loading Trade OS", sub = "Processing your request...") => {
       clearLoadingTimer();
       setLoadingMessage(msg);
       setLoadingSubtitle(sub);
@@ -162,6 +162,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    document.removeEventListener("click", handleAnchorClick, true);
     document.addEventListener("click", handleAnchorClick, true);
     return () => {
       document.removeEventListener("click", handleAnchorClick, true);
@@ -213,8 +214,7 @@ function getRouteName(path: string): string {
   if (path.includes("/strategy")) return "Strategy Adherence";
   if (path.includes("/risk-calculator")) return "Risk Calculator";
   if (path.includes("/analytics")) return "Performance Analytics";
-  if (path.includes("/coaching")) return "AI Coaching";
   if (path.includes("/settings")) return "Settings";
   if (path.includes("/dashboard")) return "Dashboard";
-  return "Trader Brio";
+  return "Trade OS";
 }

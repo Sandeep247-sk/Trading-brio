@@ -10,7 +10,6 @@ import {
   Target,
   Calculator,
   BarChart3,
-  Brain,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -27,7 +26,6 @@ const iconMap = {
   Target,
   Calculator,
   BarChart3,
-  Brain,
   Settings,
 } as const;
 
@@ -38,7 +36,6 @@ const navItems = [
   { label: "Strategy", href: "/strategy", icon: "Target" as const },
   { label: "Risk Calculator", href: "/risk-calculator", icon: "Calculator" as const },
   { label: "Analytics", href: "/analytics", icon: "BarChart3" as const },
-  { label: "Coaching", href: "/coaching", icon: "Brain" as const },
 ];
 
 const bottomItems = [
@@ -61,12 +58,12 @@ export function Sidebar() {
         collapsed ? "justify-center" : "gap-3.5"
       )}>
         <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border border-sidebar-border bg-sidebar-accent/50">
-          <img src="/logo.jpg" alt="Trading Brio" className="w-full h-full object-cover" />
+          <img src="/logo.jpg" alt="Trade OS" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
           <div className="animate-fade-in pl-0.5">
             <h1 className="text-sm font-bold tracking-tight leading-none">
-              Trading <span className="gradient-text">Brio</span>
+              Trade <span className="gradient-text">OS</span>
             </h1>
             <p className="text-[9px] text-muted-foreground leading-normal mt-1.5">Your Trading Operating System</p>
           </div>

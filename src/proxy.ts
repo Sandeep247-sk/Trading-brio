@@ -12,7 +12,6 @@ export const config = {
     "/analytics/:path*",
     "/strategy/:path*",
     "/settings/:path*",
-    "/violations/:path*",
     "/risk-calculator/:path*",
   ],
 };

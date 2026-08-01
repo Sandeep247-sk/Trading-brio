@@ -14,7 +14,6 @@ import {
   Target,
   Calculator,
   BarChart3,
-  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountSelector } from "./account-selector";
@@ -46,7 +45,6 @@ const pageLabels: Record<string, string> = {
   "/strategy/versions": "Strategy Versions",
   "/risk-calculator": "Risk Calculator",
   "/analytics": "Analytics",
-  "/violations": "Rule Violations",
   "/settings": "Settings",
 };
 
@@ -56,7 +54,6 @@ const mobileNavItems = [
   { label: "Strategy", href: "/strategy", icon: Target },
   { label: "Risk Calculator", href: "/risk-calculator", icon: Calculator },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Violations", href: "/violations", icon: ShieldAlert },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -70,7 +67,7 @@ export function Header() {
     }
     // Handle dynamic routes
     if (pathname.startsWith("/journal/")) return "Trade Detail";
-    return "Trader Brio";
+    return "Trade OS";
   };
 
   const initials = session?.user?.name
@@ -78,7 +75,7 @@ export function Header() {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2) ?? "TB";
+    .slice(0, 2) ?? "TO";
 
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40 flex items-center justify-between px-4 md:px-6">
@@ -95,10 +92,10 @@ export function Header() {
             <SheetHeader className="p-4 border-b border-sidebar-border">
               <SheetTitle className="flex items-center gap-2.5">
                 <div className="w-5 h-5 rounded overflow-hidden flex items-center justify-center border border-sidebar-border bg-sidebar-accent/50 shrink-0">
-                  <img src="/logo.jpg" alt="Trading Brio" className="w-full h-full object-cover" />
+                  <img src="/logo.jpg" alt="Trade OS" className="w-full h-full object-cover" />
                 </div>
                 <span>
-                  Trading <span className="gradient-text">Brio</span>
+                  Trade <span className="gradient-text">OS</span>
                 </span>
               </SheetTitle>
             </SheetHeader>
