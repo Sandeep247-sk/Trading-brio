@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TradeForm } from "@/components/journal/trade-form";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "New Trade | Trade OS",
@@ -24,7 +25,9 @@ export default function NewTradePage() {
       </div>
 
       <div className="bg-gray-950 border border-gray-850 p-6 rounded-lg">
-        <TradeForm />
+        <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">Loading trade form...</div>}>
+          <TradeForm />
+        </Suspense>
       </div>
     </div>
   );

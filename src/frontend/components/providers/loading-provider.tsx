@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { AnimatePresence } from "framer-motion";
@@ -22,9 +22,20 @@ const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
 
 const STORAGE_KEY = "trade_os_loading_prefs_v1";
 
-export function LoadingProvider({ children }: { children: React.ReactNode }) {
+function RouteChangeListener({ onRouteChange }: { onRouteChange: (route: string) => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const currentRoute = `${pathname}?${searchParams ? searchParams.toString() : ""}`;
+    onRouteChange(currentRoute);
+  }, [pathname, searchParams, onRouteChange]);
+
+  return null;
+}
+
+export function LoadingProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
 
   // Config state
   const [enabled, setEnabledState] = useState<boolean>(true);
@@ -41,6 +52,15 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const prevRouteRef = useRef<string>("");
   const isPendingNavigation = useRef<boolean>(false);
+
+  // Track route changes
+  const handleRouteChange = useCallback((currentRoute: string) => {
+    if (prevRouteRef.current && prevRouteRef.current !== currentRoute) {
+      // Navigation finished!
+      stopLoading();
+    }
+    prevRouteRef.current = currentRoute;
+  }, []);
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -130,45 +150,6 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
     [startLoading, stopLoading]
   );
 
-  // Track route changes: when pathname or searchParams change, navigation completed
-  useEffect(() => {
-    const currentRoute = `${pathname}?${searchParams.toString()}`;
-    if (prevRouteRef.current && prevRouteRef.current !== currentRoute) {
-      // Navigation finished!
-      stopLoading();
-    }
-    prevRouteRef.current = currentRoute;
-  }, [pathname, searchParams, stopLoading]);
-
-  // Listen to global anchor click events to trigger delayed loading if navigation takes > threshold
-  useEffect(() => {
-    if (!enabled) return;
-
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest("a");
-      if (!target) return;
-
-      const href = target.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("javascript:") || target.getAttribute("target") === "_blank") {
-        return;
-      }
-
-      // Check if navigating to another page in app
-      if (href.startsWith("/") && href !== pathname) {
-        scheduleDelayedLoading(
-          `Navigating to ${getRouteName(href)}`,
-          "Page rendering is taking a few seconds..."
-        );
-      }
-    };
-
-    document.removeEventListener("click", handleAnchorClick, true);
-    document.addEventListener("click", handleAnchorClick, true);
-    return () => {
-      document.removeEventListener("click", handleAnchorClick, true);
-    };
-  }, [enabled, pathname, scheduleDelayedLoading]);
-
   return (
     <LoadingContext.Provider
       value={{
@@ -184,6 +165,9 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
         triggerTestLoading,
       }}
     >
+      <Suspense fallback={null}>
+        <RouteChangeListener onRouteChange={handleRouteChange} />
+      </Suspense>
       {children}
       <AnimatePresence>
         {isLoadingVisible && (
