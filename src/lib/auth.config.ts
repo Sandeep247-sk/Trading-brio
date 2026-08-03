@@ -8,6 +8,15 @@ export const authConfig = {
     error: "/login",
   },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return url;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {
+        // ignore
+      }
+      return "/login";
+    },
     async authorized({ auth, request }) {
       const isLoggedIn = !!auth?.user;
       const isAuthPage =

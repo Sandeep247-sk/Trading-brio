@@ -145,7 +145,10 @@ export function SettingsClient({ user }: SettingsClientProps) {
       });
       if (res.ok) {
         setDeleteMsg({ type: "success", text: "Account deleted. Signing out..." });
-        setTimeout(() => signOut({ callbackUrl: "/login" }), 2000);
+        setTimeout(async () => {
+          await signOut({ redirect: false });
+          window.location.href = "/login";
+        }, 2000);
       } else {
         const data = await res.json();
         setDeleteMsg({ type: "error", text: data.error || "Failed to delete account" });
