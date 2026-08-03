@@ -59,7 +59,8 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Invalid email or password");
+      setErrors({ email: "Invalid credentials" });
     } finally {
       setIsLoading(false);
     }
