@@ -36,19 +36,23 @@ const nextConfig: NextConfig = {
           },
           // --- New headers added by Bug 4 fix ---
           {
-            // CSP: allow images from our own domain + Supabase CDN + data URIs.
-            // script-src uses 'self' only (no unsafe-inline for scripts).
-            // style-src permits 'unsafe-inline' because Tailwind injects styles at runtime.
-            // object-src 'none' blocks Flash/plug-ins entirely.
-            // frame-ancestors 'none' redundantly reinforces X-Frame-Options.
+            // CSP — Next.js (App Router) requires 'unsafe-inline' in script-src
+            // because it injects inline hydration scripts that cannot be nonced
+            // via static next.config.ts headers (nonces need middleware).
+            // 'unsafe-eval' is required by Next.js chunk-loading internals in
+            // production and by Framer Motion.
+            // style-src 'unsafe-inline' is required by Tailwind CSS runtime.
+            // object-src 'none' blocks Flash/plug-ins.
+            // frame-ancestors 'none' reinforces X-Frame-Options: DENY.
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
               "img-src 'self' https://*.supabase.co data: blob:",
-              "script-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://vercel.live wss://ws-us3.pusher.com",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "frame-ancestors 'none'",
               "base-uri 'self'",
