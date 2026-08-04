@@ -7,7 +7,9 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "smoke:auth": "node scripts/smoke-test-auth-domain.mjs",
+    "smoke:upload": "node scripts/smoke-test-upload-security.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
@@ -26,6 +28,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
+    "file-type": "^22.0.1",
     "framer-motion": "^12.42.0",
     "lucide-react": "^1.18.0",
     "next": "16.2.9",
